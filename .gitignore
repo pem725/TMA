@@ -1,0 +1,23 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.pdf
+*.png
+*.jpg
+IRB/
+Presentations/
+Relevant Articles/
+Trust Prospective Studies/
+Trust Review Paper/
+Trust Measure/
+*.gdsheet
+*.dot
+*.csv
+*.gddoc
+Study 1*/
+Study 2*/
+Study 3*/
+Data/
+*.PDF
+*.Rproj
