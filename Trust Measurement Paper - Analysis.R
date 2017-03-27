@@ -5,7 +5,8 @@
 ##           Lisa Alexander (lalexan8@gmu.edu)
 ##  Created:  11/20/2016
 ##  Last Edited By:  Patrick
-##  Lasted Edited Date:  3/10/2017
+##  Lasted Edited Date:  3/27/2017
+##  IMPORTANT CHANGE:  ON 3/27/2017, I moved to github to track changes
 ##  Last Edit NOTES:  added emergent and latent prediction models via PCA and EFA
 ##  Previous Edit NOTES: created lavaan models and wide data
 ##  Description:  Data analysis for the Trust Measurement development paper 
@@ -908,11 +909,48 @@ library(rstan)
 ################### CREATE ONE MASSIVE DATASET ########################
 
 ## select only those datasets with U was broken apart
-
 d3 <- dat3all.l
 d3$study <- 3
 d4 <- dat4.l
 d4$study <- 4
 d5 <- dat5all.l
+d5$study <- 5
+ATD <- rbind(d3,d4,d5)
+ATD$study <- as.factor(ATD$study)
+ATD <- ATD[complete.cases(ATD),]
 
-names(dat4.l)
+#write.csv(ATD,file="Data345.csv",row.names = F) ## do this once to just store it for future use
+#ATD <- read.csv("./Data345.csv",T)
+
+library(lme4)
+A0 <- lmer(T~1 + (1|id),data=ATD)
+A1 <- lmer(T~1 + (1|scen),data=ATD)
+anova(A0,A1)
+A01 <- lmer(T~1 + (1|id) + (1|scen),data=ATD)
+anova(A0,A1,A01)
+summary(A01)
+A01a <- lmer(T~1 + (1|id:scen),data=ATD)
+summary(A01a)
+A012 <- lmer(T~1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012,A01a)
+anova(A0,A1,A01,A012)
+summary(A01)
+A012G <- lmer(T~G + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012,A012G)
+A012GU <- lmer(T~G + U1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012G,A012GU)
+A012GUi <- lmer(T~G:U1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUi)
+A012GUr <- lmer(T~G + U1 + (U1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUr)
+A012GUR <- lmer(T~G + U1 + R + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUR)
+A012GURr <- lmer(T~G + U1 + R + (1|id) + (R|scen) + (1|study),data=ATD)
+anova(A012GUR,A012GURr)
+A012GURri <- lmer(T~G * U1 * R + (1|id) + (R|scen) + (1|study),data=ATD)
+anova(A012GURr,A012GURri)
+
+summary(A012GURri)
+
+predict(A012GURri)
+
