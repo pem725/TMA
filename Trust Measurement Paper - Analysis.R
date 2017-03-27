@@ -952,5 +952,18 @@ anova(A012GURr,A012GURri)
 
 summary(A012GURri)
 
+## use on null models only
+lmerICCest <- function(x,facet){
+  tmp <- as.data.frame(VarCorr(x))
+  out <- round(tmp$vcov[facet]/sum(tmp$vcov[c(1,nrow(tmp))]),3)
+  return(out)
+}
+
+lmerICCest(A012,1)
+lmerICCest(A012,2)
+lmerICCest(A012,3)
+as.data.frame(VarCorr(A012))
+
+
 predict(A012GURri)
 
