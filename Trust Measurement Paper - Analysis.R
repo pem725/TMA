@@ -5,7 +5,7 @@
 ##           Lisa Alexander (lalexan8@gmu.edu)
 ##  Created:  11/20/2016
 ##  Last Edited By:  Patrick
-##  Lasted Edited Date:  3/27/2017
+##  Lasted Edited Date:  3/31/2017
 ##  IMPORTANT CHANGE:  ON 3/27/2017, I moved to github to track changes
 ##  Last Edit NOTES:  added emergent and latent prediction models via PCA and EFA
 ##  Previous Edit NOTES: created lavaan models and wide data
@@ -210,6 +210,7 @@ dat.5$scenario <- 5
 dat.5$trustLVL <- 0
 dat1.l <- rbind(dat.1,dat.2,dat.3,dat.4,dat.5) ## NOTE change of name from original file
 names(dat1.l) <- c("id","T","G","R","U","scen","T.manip")
+dat1.l <- dat1.l[,c(1,2,3,5,4,6,7)]
 str(dat1.l)
 
 ### Study 2 Data:  27 Vignette Post-Extensive Editing (N=9) ####
@@ -234,13 +235,14 @@ names(dat7) <- c("id","scen","G.1","U.1","R.1","T.1","B.1","G.2","U.2","R.2","T.
 names(dat8) <- c("id","scen","G.1","U.1","R.1","T.1","B.1","G.2","U.2","R.2","T.2","B.2","G.3","U.3","R.3","T.3","B.3")
 dat.l1 <- rbind(dat1,dat2,dat3,dat4,dat5,dat6,dat7,dat8)
 dat2.l <- reshape(dat.l1,varying=list(c(3,8,13),c(4,9,14),c(5,10,15),c(6,11,16),c(7,12,17)),direction="long",idvar='id',timevar="GROUP",v.names=c("G","U","R","T","B"),new.row.names =1:216)
+dat2.l <- dat2.l[,c(1,2,4,5,6,7,8,3)]
 
 ### Study 3 Data:  9 of 27 Vignettes Presented with U broke into 3 - data from 3 sources #####
 
 ############ :SONA data ########
 dat3s <- read.csv("./Data/S3 Vignettes_Round_3_SONA_10302016.csv",header=T) ## SONA
 dat3sTIME <- as.numeric((strptime(as.character(dat3s$V9),"%m/%d/%Y %H:%M") - strptime(as.character(dat3s$V8),"%m/%d/%Y %H:%M"))/60)
-table(dat3sTIME > 10)
+#table(dat3sTIME > 10)
 dat3s <- dat3s[dat3sTIME > 10,]
 dat1 <- data.frame(id=dat3s[,c(5)],scen=1,dat3s[,c(9:10,13,16:17,19:20)])
 dat2 <- data.frame(id=dat3s[,c(5)],scen=2,dat3s[,c(23:24,27,30:31,33:34)])
@@ -333,6 +335,7 @@ dat5.lUr <- Ufold(dat5all.l,c(4,5,9)) # fold uncertainty scale
 
 ############# Study 1 ----------
 
+## note - the change in columns
 S1 <- ETM.Fcn(dat1.l,"S1out.pdf")
 S1T <- ETM.Fcn(dat1.lUr,"S1outT.pdf")
 
