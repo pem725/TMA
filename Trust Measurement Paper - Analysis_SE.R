@@ -311,6 +311,7 @@ dat.5$scenario <- 5
 dat.5$trustLVL <- 0
 dat1.l <- rbind(dat.1,dat.2,dat.3,dat.4,dat.5) ## NOTE change of name from original file
 names(dat1.l) <- c("id","T","G","R","U","scen","T.manip")
+dat1.l <- dat1.l[,c(1,2,3,5,4,6,7)]
 str(dat1.l)
 
 ### Study 2 Data:  27 Vignette Post-Extensive Editing (N=9) ####
@@ -335,6 +336,7 @@ names(dat7) <- c("id","scen","G.1","U.1","R.1","T.1","B.1","G.2","U.2","R.2","T.
 names(dat8) <- c("id","scen","G.1","U.1","R.1","T.1","B.1","G.2","U.2","R.2","T.2","B.2","G.3","U.3","R.3","T.3","B.3")
 dat.l1 <- rbind(dat1,dat2,dat3,dat4,dat5,dat6,dat7,dat8)
 dat2.l <- reshape(dat.l1,varying=list(c(3,8,13),c(4,9,14),c(5,10,15),c(6,11,16),c(7,12,17)),direction="long",idvar='id',timevar="GROUP",v.names=c("G","U","R","T","B"),new.row.names =1:216)
+dat2.l <- dat2.l[,c(1,2,4,5,6,7,8,3)]
 
 ### Study 3 Data:  9 of 27 Vignettes Presented with U broke into 3 - data from 3 sources #####
 
@@ -576,6 +578,26 @@ summary(fit4, fit.measures=TRUE)
 fit5 <- cfa(LVmodel2,data=dat5.l,auto.fix.first=T)
 summary(fit5, fit.measures=TRUE)
 
+
+fit5a <- cfa(LVmodel2,data=dat5.l,auto.fix.first=T)
+summary(fit5a, fit.measures=TRUE)
+parameterEstimates(fit5a)
+standardizedSolution(fit5a)
+fitMeasures(fit5a)
+modificationIndices(fit5a,T,T)
+
+
+## based upon the modification indices, we ought to run...
+LVmodelMOD <- '
+F =~ G + U1 + R + T
+'
+fit5m <- cfa(LVmodelMOD,data=dat5.l,auto.fix.first=T)
+summary(fit5m, fit.measures=TRUE)
+parameterEstimates(fit5m)
+standardizedSolution(fit5m)
+fitMeasures(fit5m)
+modificationIndices(fit5m,T,T)
+
 ### for the wide data
 
 ## (see below where I created the dat5.w for the trait analysis)
@@ -597,6 +619,401 @@ T =~ G + U + R
 '
 fitw <- cfa(LVmodel2,data=dat5.w)
 summary(fitw,fit.measures=TRUE)
+
+
+####################### Mediation Models ######################
+MedModel <- '
+T ~ c1*U1 + c2*G
+R ~ a1*U1 + a2*G
+T ~ b1*R
+inE := a1*b + a2*b
+tot := c1 + c2 + (a1*b + a2*b)
+'
+
+fitm1a <- sem(MedModel,data=dat3all.l,se="bootstrap")
+summary(fitm1a)
+# lavaan (0.5-23.1097) converged normally after  15 iterations
+# 
+# Used       Total
+# Number of observations                          1172        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic                0.000
+# Degrees of freedom                                 0
+# Minimum Function Value               0.0000000000000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.169    0.022    7.563    0.000
+# G         (c2)   -0.112    0.019   -5.856    0.000
+# R ~                                                 
+#   U1        (a1)   -0.040    0.036   -1.091    0.275
+# G         (a2)    0.008    0.027    0.315    0.753
+# T ~                                                 
+#   R          (b)    0.735    0.022   33.659    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 3.405    0.194   17.519    0.000
+# .R                 7.843    0.240   32.620    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE              -0.023    0.029   -0.799    0.424
+# tot               0.034    0.037    0.900    0.368
+
+fitm1b <- sem(MedModel,data=dat4.l,se="bootstrap")
+summary(fitm1b)
+# lavaan (0.5-23.1097) converged normally after  15 iterations
+# 
+# Used       Total
+# Number of observations                          1138        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic                0.000
+# Degrees of freedom                                 0
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.091    0.023    3.970    0.000
+# G         (c2)   -0.114    0.019   -6.123    0.000
+# R ~                                                 
+#   U1        (a1)   -0.033    0.035   -0.938    0.348
+# G         (a2)    0.054    0.025    2.122    0.034
+# T ~                                                 
+#   R          (b)    0.745    0.023   32.150    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 3.033    0.204   14.903    0.000
+# .R                 7.039    0.242   29.128    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.016    0.029    0.544    0.586
+# tot              -0.007    0.039   -0.185    0.853
+
+fitm1c <- sem(MedModel,data=dat5.l,se="bootstrap")
+summary(fitm1c)
+# lavaan (0.5-23.1097) converged normally after  16 iterations
+# 
+# Used       Total
+# Number of observations                          3698        4048
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic                0.000
+# Degrees of freedom                                 0
+# Minimum Function Value               0.0000000000000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.097    0.017    5.842    0.000
+# G         (c2)   -0.132    0.013  -10.111    0.000
+# R ~                                                 
+#   U1        (a1)    0.080    0.024    3.392    0.001
+# G         (a2)    0.231    0.018   12.958    0.000
+# T ~                                                 
+#   R          (b)    0.655    0.014   47.225    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 4.016    0.137   29.387    0.000
+# .R                 8.263    0.155   53.369    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.204    0.015   14.034    0.000
+# tot               0.169    0.020    8.310    0.000
+
+
+## Create Interaction Variables
+
+# Data set 3
+dat3all.l$GU1 <- dat3all.l$G*dat3all.l$U1
+dat3all.l$RU2 <- dat3all.l$R*dat3all.l$U2
+# Data set 4
+dat4.l$GU1 <- dat4.l$G*dat4.l$U1
+dat4.l$RU2 <- dat4.l$R*dat4.l$U2
+# Data set 5
+dat5.l$GU1 <- dat5.l$G*dat5.l$U1
+dat5.l$RU2 <- dat5.l$R*dat5.l$U2
+
+MedModel2 <- '
+T ~ c1*GU1
+R ~ a1*GU1 
+T ~ b*RU2
+inE := a1*b 
+tot := c1 + a1*b
+'
+fitm2a <- sem(MedModel2,data=dat3all.l,se="bootstrap")
+summary(fitm2a)
+# lavaan (0.5-23.1097) converged normally after  35 iterations
+# 
+# Used       Total
+# Number of observations                          1172        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic             1553.491
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   GU1       (c1)   -0.005    0.002   -2.456    0.014
+# R ~                                                 
+#   GU1       (a1)    0.000    0.003    0.124    0.901
+# T ~                                                 
+#   RU2        (b)    0.033    0.004    7.421    0.000
+# 
+# Covariances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T ~~                                                
+#   .R                 3.547    0.423    8.379    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 5.048    0.338   14.945    0.000
+# .R                 7.853    0.266   29.467    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.000    0.000    0.121    0.904
+# tot              -0.005    0.002   -2.398    0.016
+
+fitm2b <- sem(MedModel2,data=dat4.l,se="bootstrap")
+summary(fitm2b)
+# lavaan (0.5-23.1097) converged normally after  38 iterations
+# 
+# Used       Total
+# Number of observations                          1138        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic             1549.249
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   GU1       (c1)   -0.007    0.002   -3.126    0.002
+# R ~                                                 
+#   GU1       (a1)    0.004    0.003    1.431    0.152
+# T ~                                                 
+#   RU2        (b)    0.026    0.004    6.123    0.000
+# 
+# Covariances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T ~~                                                
+#   .R                 3.564    0.381    9.364    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 4.816    0.346   13.900    0.000
+# .R                 7.054    0.245   28.823    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.000    0.000    1.352    0.176
+# tot              -0.007    0.002   -3.028    0.002
+
+fitm2c <- sem(MedModel2,data=dat5.l,se="bootstrap")
+summary(fitm2c)
+
+
+MedModel3 <- '
+T ~ c1*U1 + c2*G
+R ~ a1*U1 + a2*G
+T ~ b1*R + b2*U2
+inE := a1*b1 + a2*b1 + a1*b2 + a2*b2
+tot := c1 + c2 + (a1*b1 + a2*b1 + a1*b2 + a2*b2)
+'
+
+fitm3a <- sem(MedModel3,data=dat3all.l,se="bootstrap")
+summary(fitm3a)
+# lavaan (0.5-23.1097) converged normally after  16 iterations
+# 
+# Used       Total
+# Number of observations                          1172        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic              285.920
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.151    0.023    6.456    0.000
+# G         (c2)   -0.150    0.019   -7.700    0.000
+# R ~                                                 
+#   U1        (a1)   -0.040    0.036   -1.107    0.268
+# G         (a2)    0.008    0.027    0.314    0.754
+# T ~                                                 
+#   R         (b1)    0.658    0.027   24.108    0.000
+# U2        (b2)    0.170    0.026    6.509    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 3.240    0.181   17.881    0.000
+# .R                 7.843    0.256   30.641    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE              -0.026    0.033   -0.790    0.430
+# tot              -0.024    0.041   -0.590    0.555
+
+fitm3b <- sem(MedModel3,data=dat4.l,se="bootstrap")
+summary(fitm3b)
+# lavaan (0.5-23.1097) converged normally after  15 iterations
+# 
+# Used       Total
+# Number of observations                          1138        1192
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic              311.153
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.084    0.023    3.657    0.000
+# G         (c2)   -0.141    0.018   -7.725    0.000
+# R ~                                                 
+#   U1        (a1)   -0.033    0.036   -0.909    0.364
+# G         (a2)    0.054    0.027    1.992    0.046
+# T ~                                                 
+#   R         (b1)    0.686    0.028   24.182    0.000
+# U2        (b2)    0.120    0.027    4.420    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 2.956    0.194   15.276    0.000
+# .R                 7.039    0.225   31.351    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.017    0.033    0.515    0.606
+# tot              -0.040    0.042   -0.943    0.346
+
+fitm3c <- sem(MedModel3,data=dat5.l,se="bootstrap")
+summary(fitm3c)
+# lavaan (0.5-23.1097) converged normally after  17 iterations
+# 
+# Used       Total
+# Number of observations                          3698        4048
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic             1163.959
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   U1        (c1)    0.087    0.017    5.277    0.000
+# G         (c2)   -0.168    0.013  -13.280    0.000
+# R ~                                                 
+#   U1        (a1)    0.080    0.023    3.477    0.001
+# G         (a2)    0.231    0.017   13.364    0.000
+# T ~                                                 
+#   R         (b1)    0.573    0.017   34.558    0.000
+# U2        (b2)    0.178    0.019    9.272    0.000
+# 
+# Variances:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# .T                 3.863    0.130   29.739    0.000
+# .R                 8.263    0.162   51.083    0.000
+# 
+# Defined Parameters:
+#   Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.233    0.017   13.981    0.000
+# tot               0.152    0.022    6.984    0.000
+
+####################### MISC ######################################
+
+### Study 1
+## correlation matrix and plot
+round(cor(dat1.l[,2:5]),2)
+cor.plot(cor(dat1.l[,2:5]))
+
+### Study 2
+## correlation matrix and plot
+round(cor(dat2.l[,3:7],use="pairwise.complete.obs"),2)
+cor.plot(cor(dat2.l[,3:7],use="pairwise.complete.obs"))
+
+### Study 3
+round(cor(dat3all.l[,3:9],use="pairwise.complete.obs"),2)
+cor.plot(cor(dat3all.l[,3:9],use="pairwise.complete.obs"))
+
+### Study 4
+round(cor(dat4.l[,3:9],use="pairwise.complete.obs"),2)
+cor.plot(cor(dat4.l[,3:9],use="pairwise.complete.obs"))
+
+### Study 5
+round(cor(dat5.l[,3:9],use="pairwise.complete.obs"),2)
+cor.plot(cor(dat5.l[,3:9],use="pairwise.complete.obs"))
+
 
 ########### EMERGENT MODEL TESTED VIA PCA ##############
 
@@ -1270,10 +1687,96 @@ Rlambda <- outR[outR$y == max(outR$y),1]
 newdat3$Rt <- (newdat3$R^Rlambda - 1)/Rlambda
 
 summary(lm(T~G*U1*R,data=newdat3))
+# Call:
+#   lm(formula = T ~ G * U1 * R, data = newdat3)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -7.3982 -1.0346 -0.0375  0.8366  7.6300 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  0.009976   0.582831   0.017  0.98635    
+# G            0.111556   0.074584   1.496  0.13500    
+# U1           0.486538   0.079617   6.111 1.35e-09 ***
+# R            0.997756   0.099982   9.979  < 2e-16 ***
+# G:U1        -0.043794   0.009996  -4.381 1.29e-05 ***
+# G:R         -0.035834   0.012978  -2.761  0.00585 ** 
+# U1:R        -0.056928   0.014335  -3.971 7.58e-05 ***
+# G:U1:R       0.007555   0.001793   4.214 2.70e-05 ***
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 1.83 on 1164 degrees of freedom
+# Multiple R-squared:  0.5758,	Adjusted R-squared:  0.5732 
+# F-statistic: 225.7 on 7 and 1164 DF,  p-value: < 2.2e-16
+
 summary(lm(T~Gt*U1t*Rt,data=newdat3))
+# Call:
+#   lm(formula = T ~ Gt * U1t * Rt, data = newdat3)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -7.3699 -1.0237 -0.0403  0.8247  7.6159 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  1.4413583  0.3706311   3.889 0.000106 ***
+#   Gt           0.0216712  0.0236889   0.915 0.360473    
+# U1t          0.1860418  0.0274638   6.774 1.98e-11 ***
+#   Rt           0.9154265  0.0724050  12.643  < 2e-16 ***
+#   Gt:U1t      -0.0076990  0.0017055  -4.514 7.00e-06 ***
+#   Gt:Rt       -0.0119962  0.0047100  -2.547 0.010994 *  
+#   U1t:Rt      -0.0233382  0.0056914  -4.101 4.41e-05 ***
+#   Gt:U1t:Rt    0.0015339  0.0003518   4.360 1.42e-05 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 1.829 on 1164 degrees of freedom
+# Multiple R-squared:  0.5764,	Adjusted R-squared:  0.5739 
+# F-statistic: 226.3 on 7 and 1164 DF,  p-value: < 2.2e-16
+
 
 summary(lm(T~G:U1:R,data=newdat3))
+# 
+# Call:
+#   lm(formula = T ~ G:U1:R, data = newdat3)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -6.8116 -1.7826  0.0728  1.7411  5.6103 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 4.3896769  0.1069845   41.03   <2e-16 ***
+#   G:U1:R      0.0055274  0.0003069   18.01   <2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.479 on 1170 degrees of freedom
+# Multiple R-squared:  0.2171,	Adjusted R-squared:  0.2164 
+# F-statistic: 324.5 on 1 and 1170 DF,  p-value: < 2.2e-16
+
 summary(lm(T~Gt:U1t:Rt,data=newdat3))
+# Call:
+#   lm(formula = T ~ Gt:U1t:Rt, data = newdat3)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -6.7630 -1.8349  0.0139  1.9017  5.3840 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 4.799e+00  9.344e-02   51.36   <2e-16 ***
+#   Gt:U1t:Rt   1.496e-03  8.645e-05   17.31   <2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.5 on 1170 degrees of freedom
+# Multiple R-squared:  0.2038,	Adjusted R-squared:  0.2032 
+# F-statistic: 299.6 on 1 and 1170 DF,  p-value: < 2.2e-16
+
+
 
 ### see:  https://www.r-bloggers.com/on-box-cox-transform-in-regression-models/
 ##        https://www.r-bloggers.com/tukey-and-mostellers-bulging-rule-and-ladder-of-powers/
@@ -1290,6 +1793,9 @@ for (i in seq(.1,5,by=.1)){
 outRsq <- outRsq[-1,]
 ggplot(outRsq,aes(y=AdjR2,x=Exp)) + geom_smooth()
 outRsq[outRsq$AdjR2==max(outRsq$AdjR2),]
+
+#    Exp     AdjR2
+# 10 0.9 0.2166358
 
 ## G exp:  3
 ## U exp:  .4
@@ -1310,17 +1816,76 @@ dat3tmp$Rz <- scale(dat3tmp$R)
 
 lm3fin <- lm(T~G3z:U1.4z:Rz,data=dat3tmp)
 summary(lm3fin)
+# Call:
+#   lm(formula = T ~ G3z:U1.4z:Rz, data = dat3tmp)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -8.9574 -1.8041  0.1906  2.2070  5.3845 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)   5.79011    0.08074  71.717  < 2e-16 ***
+#   G3z:U1.4z:Rz  0.39057    0.06657   5.867 5.77e-09 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.762 on 1170 degrees of freedom
+# (20 observations deleted due to missingness)
+# Multiple R-squared:  0.02858,	Adjusted R-squared:  0.02775 
+# F-statistic: 34.42 on 1 and 1170 DF,  p-value: 5.765e-09
 
 dat3tmp$GUR <- dat3tmp$G*dat3tmp$U1*dat3tmp$R
 lm3GUR <- lm(T~GUR,data=dat3tmp)
 summary(lm3GUR)
+# Call:
+#   lm(formula = T ~ GUR, data = dat3tmp)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -6.8116 -1.7826  0.0728  1.7411  5.6103 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 4.3896769  0.1069845   41.03   <2e-16 ***
+#   GUR         0.0055274  0.0003069   18.01   <2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.479 on 1170 degrees of freedom
+# (20 observations deleted due to missingness)
+# Multiple R-squared:  0.2171,	Adjusted R-squared:  0.2164 
+# F-statistic: 324.5 on 1 and 1170 DF,  p-value: < 2.2e-16
+
 pGUR <- ggplot(dat3tmp,aes(x=GUR,y=T)) + geom_smooth()
 pGUR
 
 round(cor(x=dat3tmp[,c("G","U1","R")],y=dat3tmp$GUR,use="pairwise.complete.obs"),2)
+# G  0.54
+# U1 0.46
+# R  0.62
 
 lm3all <- lm(T~G:U1:R,data=dat3all.l)
 summary(lm3all)
+# Call:
+#   lm(formula = T ~ G:U1:R, data = dat3all.l)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -6.8116 -1.7826  0.0728  1.7411  5.6103 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 4.3896769  0.1069845   41.03   <2e-16 ***
+#   G:U1:R      0.0055274  0.0003069   18.01   <2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.479 on 1170 degrees of freedom
+# (20 observations deleted due to missingness)
+# Multiple R-squared:  0.2171,	Adjusted R-squared:  0.2164 
+# F-statistic: 324.5 on 1 and 1170 DF,  p-value: < 2.2e-16
+
 
 library(lme4)
 m.0 <- lmer(T~ 1 + (1|id), data=dat3all.l)
@@ -1359,6 +1924,15 @@ anova(m.15,m.17,m.19)
 ## compare m.19 to the lm3
 lm3.all <- lm(T~G*U1*R,data=dat3all.l)
 anova(m.19,lm3.all)
+# Data: dat3all.l
+# Models:
+#   lm3.all: T ~ G * U1 * R
+# m.19: T ~ G * U1 * R + (G | scen) + (U1 | scen) + (R | scen)
+#          Df    AIC    BIC  logLik deviance  Chisq Chi-Df Pr(>Chisq)    
+# lm3.all  9  4752.4 4798.0 -2367.2   4734.4                             
+# m.19    18  4409.5 4500.7 -2186.7   4373.5 360.91      9  < 2.2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ### WE HAVE A WINNER - m.19
 summary(lm(m.19))
@@ -1368,26 +1942,26 @@ summary(lm(m.19))
 # 
 # Residuals:
 #   Min      1Q  Median      3Q     Max 
-# -6.8207 -1.0360 -0.0657  0.8230  7.5747 
+# -6.8365 -1.0317 -0.0698  0.8201  7.5881 
 # 
 # Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept) -0.753198   0.583409  -1.291 0.196957    
-# G            0.135424   0.073610   1.840 0.066066 .  
-# U1           0.390147   0.079378   4.915 1.02e-06 ***
-# R            1.036380   0.098882  10.481  < 2e-16 ***
-# scen         0.190486   0.026287   7.246 7.89e-13 ***
-# G:U1        -0.038384   0.009873  -3.888 0.000107 ***
-# G:R         -0.037597   0.012841  -2.928 0.003480 ** 
-# U1:R        -0.056185   0.014145  -3.972 7.57e-05 ***
-# G:U1:R       0.007337   0.001774   4.136 3.80e-05 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#                Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) -0.768597   0.579806  -1.326  0.18523    
+#   G            0.139332   0.073044   1.908  0.05670 .  
+#   U1           0.393870   0.078884   4.993 6.85e-07 ***
+#   R            1.041226   0.097965  10.629  < 2e-16 ***
+#   scen         0.189625   0.025831   7.341 3.97e-13 ***
+#   G:U1        -0.039172   0.009796  -3.999 6.77e-05 ***
+#   G:R         -0.039416   0.012702  -3.103  0.00196 ** 
+#   U1:R        -0.056935   0.014020  -4.061 5.21e-05 ***
+#   G:U1:R       0.007611   0.001753   4.341 1.54e-05 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 # 
-# Residual standard error: 1.799 on 1134 degrees of freedom
-# (17 observations deleted due to missingness)
-# Multiple R-squared:  0.594,	Adjusted R-squared:  0.5911 
-# F-statistic: 207.4 on 8 and 1134 DF,  p-value: < 2.2e-16
+# Residual standard error: 1.79 on 1163 degrees of freedom
+# (20 observations deleted due to missingness)
+# Multiple R-squared:  0.5945,	Adjusted R-squared:  0.5918 
+# F-statistic: 213.2 on 8 and 1163 DF,  p-value: < 2.2e-16
 
 ## the best fitting model to date is m.19.  We have an overall winner.
 
@@ -1401,6 +1975,49 @@ summary(lm(m.19))
 # scenarios produce the variance in the parameters.  That finding, my friends,
 # rocks.
 
+summary(m.19)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: T ~ G * U1 * R + (G | scen) + (U1 | scen) + (R | scen)
+# Data: dat3all.l
+# 
+# REML criterion at convergence: 4422.7
+# 
+# Scaled residuals: 
+#   Min      1Q  Median      3Q     Max 
+# -3.7978 -0.4775 -0.0039  0.5051  4.2762 
+# 
+# Random effects:
+#   Groups   Name         Variance Std.Dev. Corr 
+#   scen     (Intercept)  0.34290  0.5856        
+#   G                     0.01316  0.1147   -1.00
+#   scen.1   (Intercept)  1.89855  1.3779        
+#   U1                    0.01253  0.1119   -1.00
+#   scen.2   (Intercept)  4.42931  2.1046        
+#   R                     0.05748  0.2398   -1.00
+#   Residual              2.32746  1.5256        
+#   Number of obs: 1172, groups:  scen, 8
+# 
+# Fixed effects:
+#              Estimate  Std.Error t-value
+# (Intercept)  1.348246   1.150333   1.172
+# G            0.004296   0.106084   0.040
+# U1           0.306569   0.100291   3.057
+# R            0.831049   0.133115   6.243
+# G:U1        -0.022406   0.011796  -1.899
+# G:R         -0.020509   0.014244  -1.440
+# U1:R        -0.032274   0.014429  -2.237
+# G:U1:R       0.004330   0.001796   2.411
+# 
+# Correlation of Fixed Effects:
+#            G      U1     R      G:U1   G:R    U1:R  
+# G      -0.564                                          
+# U1     -0.596  0.513                                   
+# R      -0.762  0.447  0.423                            
+# G:U1    0.439 -0.737 -0.787 -0.385                     
+# G:R     0.406 -0.717 -0.413 -0.656  0.589              
+# U1:R    0.370 -0.426 -0.744 -0.635  0.656  0.632       
+# G:U1:R -0.347  0.590  0.634  0.563 -0.795 -0.823 -0.845
+
 ## Replication attempt to the linear model
 m.19.R <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat4.l)
 summary(lm(m.19.R))
@@ -1411,6 +2028,161 @@ summary(lm(m19.R.2a))
 m19.R.2b <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=subset(dat5.l,dat5.l$scen > 8))
 summary(lm(m19.R.2b))
 
+## Test again with data set 5
+m.19.Conf <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat5.l)
+anova(m.19.Conf)
+# Warning messages:
+#   1: In checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv,  :
+#                     unable to evaluate scaled gradient
+#   2: In checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv,  :
+#                     Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+#   > anova(m.19.Conf)
+#        Analysis of Variance Table
+#         Df Sum Sq Mean Sq  F value
+#  G       1  22.58   22.58   9.4550
+#  U1      1  75.46   75.46  31.5915
+#  R       1 463.13  463.13 193.9000
+#  G:U1    1  17.37   17.37   7.2742
+#  G:R     1  58.77   58.77  24.6055
+#  U1:R    1   5.52    5.52   2.3128
+#  G:U1:R  1  26.66   26.66  11.1613
+
+## compare m.19 to the lm3
+lm5.all <- lm(T~G*U1*R,data=dat5.l)
+anova(m.19.Conf,lm5.all)
+# Data: dat5.l
+# Models:
+#   lm5.all: T ~ G * U1 * R
+# m.19.Conf: T ~ G * U1 * R + (G | scen) + (U1 | scen) + (R | scen)
+#           Df   AIC   BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
+# lm5.all    9 13157 13212 -6569.4    13139                             
+# m.19.Conf 18 12107 12216 -6035.5    12071 1067.8      9  < 2.2e-16 ***
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+summary(lm(m.19.Conf))
+summary(m.19.Conf)
+## Model failed to converge
+##
+# Call:
+#   lm(formula = m.19.Conf)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -8.8250 -0.9719  0.0294  1.0027  8.2318 
+# 
+# Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  0.632673   0.450440   1.405  0.16025    
+# G            0.141941   0.055516   2.557  0.01061 *  
+# U1           0.401921   0.059141   6.796 1.28e-11 ***
+# R            0.797777   0.069852  11.421  < 2e-16 ***
+# scen         0.009772   0.007529   1.298  0.19438    
+# G:U1        -0.042962   0.006968  -6.166 7.90e-10 ***
+# G:R         -0.013739   0.008488  -1.619  0.10561    
+# U1:R        -0.023318   0.009548  -2.442  0.01465 *  
+# G:U1:R       0.003027   0.001071   2.827  0.00473 ** 
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 1.863 on 3211 degrees of freedom
+# (92 observations deleted due to missingness)
+# Multiple R-squared:  0.5293,	Adjusted R-squared:  0.5281 
+# F-statistic: 451.3 on 8 and 3211 DF,  p-value: < 2.2e-16
+# 
+# > summary(m.19.Conf)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: T ~ G * U1 * R + (G | scen) + (U1 | scen) + (R | scen)
+# Data: dat5.l
+# 
+# REML criterion at convergence: 12127.2
+# 
+# Scaled residuals: 
+#   Min      1Q  Median      3Q     Max 
+# -4.8463 -0.5136 -0.0060  0.4818  4.6495 
+# 
+# Random effects:
+# Groups         Name  Variance Std.Dev. Corr 
+# scen     (Intercept) 0.038403 0.19597       
+# G                    0.008660 0.09306  0.72 
+# scen.1   (Intercept) 0.668605 0.81768       
+# U1                   0.006361 0.07976  -0.99
+# scen.2   (Intercept) 1.539657 1.24083       
+# R                    0.038087 0.19516  -1.00
+# Residual             2.388520 1.54548       
+# Number of obs: 3220, groups:  scen, 16
+# 
+# Fixed effects:
+#              Estimate Std. Error t value
+# (Intercept)  1.648340   0.591790   2.785
+# G            0.024267   0.066737   0.364
+# U1           0.350244   0.066586   5.260
+# R            0.654825   0.084554   7.744
+# G:U1        -0.036284   0.007603  -4.772
+# G:R         -0.004442   0.008899  -0.499
+# U1:R        -0.019881   0.009464  -2.101
+# G:U1:R       0.003567   0.001068   3.341
+# 
+# Correlation of Fixed Effects:
+#   (Intr) G      U1     R      G:U1   G:R    U1:R  
+# G      -0.577                                          
+# U1     -0.699  0.536                                   
+# R      -0.814  0.493  0.497                            
+# G:U1    0.571 -0.787 -0.803 -0.452                     
+# G:R     0.530 -0.770 -0.456 -0.683  0.659              
+# U1:R    0.512 -0.442 -0.798 -0.661  0.676  0.609       
+# G:U1:R -0.478  0.648  0.689  0.609 -0.829 -0.829 -0.861
+# convergence code: 0
+# unable to evaluate scaled gradient
+# Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+
+> summary(lm5.all)
+# 
+# Call:
+#   lm(formula = T ~ G * U1 * R, data = dat5.l)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -8.8218 -0.9802  0.0218  1.0051  8.2315 
+# 
+# Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  0.786997   0.434512   1.811  0.07020 .  
+# G            0.132094   0.055001   2.402  0.01638 *  
+# U1           0.396857   0.059018   6.724 2.08e-11 ***
+# R            0.788269   0.069474  11.346  < 2e-16 ***
+# G:U1        -0.042277   0.006949  -6.084 1.31e-09 ***
+# G:R         -0.013094   0.008474  -1.545  0.12241    
+# U1:R        -0.022498   0.009528  -2.361  0.01827 *  
+# G:U1:R       0.002981   0.001070   2.785  0.00539 ** 
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 1.864 on 3212 degrees of freedom
+# (92 observations deleted due to missingness)
+# Multiple R-squared:  0.5291,	Adjusted R-squared:  0.528 
+# F-statistic: 515.5 on 7 and 3212 DF,  p-value: < 2.2e-16
+
+> summary(lm(T~G:U1:R,data=dat5.l))
+# 
+# Call:
+#   lm(formula = T ~ G:U1:R, data = dat5.l)
+# 
+# Residuals:
+#   Min      1Q  Median      3Q     Max 
+# -8.9541 -1.5397  0.2396  1.5443  5.8064 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) 5.1539690  0.0707546   72.84   <2e-16 ***
+#   G:U1:R      0.0036064  0.0001202   30.01   <2e-16 ***
+#   ---
+#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 2.398 on 3218 degrees of freedom
+# (92 observations deleted due to missingness)
+# Multiple R-squared:  0.2187,	Adjusted R-squared:  0.2185 
+# F-statistic: 900.8 on 1 and 3218 DF,  p-value: < 2.2e-16
 
 
 ############### A Bayesian Model Perhaps? #################
@@ -1461,7 +2233,75 @@ if (interactive()) {
 
 library(rstan)
 
+################### CREATE ONE MASSIVE DATASET ########################
 
+## select only those datasets with U was broken apart
+d3 <- dat3all.l
+d3$study <- 3
+d4 <- dat4.l
+d4$study <- 4
+d5 <- dat5all.l
+d5$study <- 5
+
+ATD <- rbind(d3,d4,d5)
+ATD$study <- as.factor(ATD$study)
+ATD <- ATD[complete.cases(ATD),]
+
+#write.csv(ATD,file="Data345.csv",row.names = F) ## do this once to just store it for future use
+#ATD <- read.csv("./Data345.csv",T)
+
+library(lme4)
+A0 <- lmer(T~1 + (1|id),data=ATD)
+A1 <- lmer(T~1 + (1|scen),data=ATD)
+anova(A0,A1)
+A01 <- lmer(T~1 + (1|id) + (1|scen),data=ATD)
+anova(A0,A1,A01)
+summary(A01)
+A01a <- lmer(T~1 + (1|id:scen),data=ATD)
+summary(A01a)
+A012 <- lmer(T~1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012,A01a)
+anova(A0,A1,A01,A012)
+summary(A01)
+A012G <- lmer(T~G + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012,A012G)
+A012GU <- lmer(T~G + U1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012G,A012GU)
+A012GUi <- lmer(T~G:U1 + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUi)
+A012GUr <- lmer(T~G + U1 + (U1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUr)
+A012GUR <- lmer(T~G + U1 + R + (1|id) + (1|scen) + (1|study),data=ATD)
+anova(A012GU,A012GUR)
+A012GURr <- lmer(T~G + U1 + R + (1|id) + (R|scen) + (1|study),data=ATD)
+anova(A012GUR,A012GURr)
+A012GURri <- lmer(T~G * U1 * R + (1|id) + (R|scen) + (1|study),data=ATD)
+anova(A012GURr,A012GURri)
+
+summary(A012GURri)
+
+## use on null models only
+### cheat sheet:
+## x:  an lmer object
+## facet:  the level of generalization you wish to assess (ordered in the lmer object)
+
+lmerICCest <- function(x,facet=NULL){
+  tmp <- as.data.frame(VarCorr(x))[,c("grp","vcov")]
+  out <- round(tmp$vcov[!is.na(match(tmp$grp,facet))]/sum(tmp$vcov),2)
+  return(out)
+}
+
+lmerICCest(A012,"id")
+lmerICCest(A012,"scen")
+lmerICCest(A012,"study")
+as.data.frame(VarCorr(A012))
+
+# > lmerICCest(A012,"id")
+# [1] 0.04
+# > lmerICCest(A012,"scen")
+# [1] 0.27
+# > lmerICCest(A012,"study")
+# [1] 0.05
 
 ##################################################################################################
 ######################################## OLD CODE ################################################
