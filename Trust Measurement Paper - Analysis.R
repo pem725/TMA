@@ -812,6 +812,14 @@ anova(m.19,lm3.all)
 
 ### WE HAVE A WINNER - m.19
 summary(lm(m.19))
+summrary(m.19)
+m.19.out <- round(summary(m.19)$coefficients,3)
+coefficients(m.19)
+
+library(xtable)
+library(R2HTML)
+HTML(print(xtable(m.19.out),type="html"),"Model19dat3.doc",sep="")
+## NOW - import that file into Google Docs (or MS Word) and you are all set
 
 # Call:
 #   lm(formula = m.19)
@@ -854,6 +862,20 @@ summary(lm(m.19))
 ## Replication attempt to the linear model
 m.19.R <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat4.l)
 summary(lm(m.19.R))
+
+library(lmerTest)
+
+## convergence problems for the replication of m19 lead me to these steps:
+d5tmp <- dat5.l
+d5tmp$G <- scale(d5tmp$G,T,F)
+d5tmp$U1 <- scale(d5tmp$U1,T,F)
+d5tmp$R <- scale(d5tmp$R,T,F)
+
+m19.R.2 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=d5tmp)
+summary(m19.R.2) ## use these results rather than the results from the lm() summary below
+summary(lm(m19.R.2))
+
+
 
 m19.R.2a <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=subset(dat5.l,dat5.l$scen < 9))  ## failed to converge
 summary(lm(m19.R.2a))
@@ -918,6 +940,7 @@ d4 <- dat4.l
 d4$study <- 4
 d5 <- dat5all.l
 d5$study <- 5
+
 ATD <- rbind(d3,d4,d5)
 ATD$study <- as.factor(ATD$study)
 ATD <- ATD[complete.cases(ATD),]
@@ -956,15 +979,19 @@ anova(A012GURr,A012GURri)
 summary(A012GURri)
 
 ## use on null models only
-lmerICCest <- function(x,facet){
-  tmp <- as.data.frame(VarCorr(x))
-  out <- round(tmp$vcov[facet]/sum(tmp$vcov[c(1,nrow(tmp))]),3)
+### cheat sheet:
+## x:  an lmer object
+## facet:  the level of generalization you wish to assess (ordered in the lmer object)
+
+lmerICCest <- function(x,facet=NULL){
+  tmp <- as.data.frame(VarCorr(x))[,c("grp","vcov")]
+  out <- round(tmp$vcov[!is.na(match(tmp$grp,facet))]/sum(tmp$vcov),2)
   return(out)
 }
 
-lmerICCest(A012,1)
-lmerICCest(A012,2)
-lmerICCest(A012,3)
+lmerICCest(A012,"id")
+lmerICCest(A012,"scen")
+lmerICCest(A012,"study")
 as.data.frame(VarCorr(A012))
 
 
