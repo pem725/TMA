@@ -168,6 +168,19 @@ ETM.Fcn <- function(x,outfile){
   return(out)
 }
 
+
+#### ICC estimation function for lmer ####
+## cheat sheet:
+## x:  lmer object for null model only
+## facet:  the text (in quotes) name of the variable you wish to assess
+lmerICCest <- function(x,facet=NULL){
+  tmp <- as.data.frame(VarCorr(x))[,c("grp","vcov")]
+  out <- round(tmp$vcov[!is.na(match(tmp$grp,facet))]/sum(tmp$vcov),2)
+  return(out)
+}
+
+
+
 ####################### TRUST MODEL DATA SOURCES ##############################
 ## NOTE:  load data source here and conclude each section with a final object
 ## RESULT:  Each study produced slightly different data.  The data structure
@@ -883,6 +896,17 @@ summary(lm(m19.R.2a))
 m19.R.2b <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=subset(dat5.l,dat5.l$scen > 8))
 summary(lm(m19.R.2b))
 
+#### ICC estimates by study #####
+## be sure to load the lmerICCest (see below)
+ic3 <- lmer(T~1 + (1|id) + (1|scen), data=dat3all.l)
+lmerICCest(ic3,"id") # 0.08
+lmerICCest(ic3,"scen") # 0.36
+ic4 <- lmer(T~1 + (1|id) + (1|scen), data=dat4.l)
+lmerICCest(ic4,"id") # 0.12
+lmerICCest(ic4,"scen") # 0.33
+ic5 <- lmer(T~1 + (1|id) + (1|scen), data=dat5.l)
+lmerICCest(ic5,"id") # 0.07
+lmerICCest(ic5,"scen") # 0.27
 
 ############### A Bayesian Model Perhaps? #################
 
@@ -983,11 +1007,6 @@ summary(A012GURri)
 ## x:  an lmer object
 ## facet:  the level of generalization you wish to assess (ordered in the lmer object)
 
-lmerICCest <- function(x,facet=NULL){
-  tmp <- as.data.frame(VarCorr(x))[,c("grp","vcov")]
-  out <- round(tmp$vcov[!is.na(match(tmp$grp,facet))]/sum(tmp$vcov),2)
-  return(out)
-}
 
 lmerICCest(A012,"id")
 lmerICCest(A012,"scen")
