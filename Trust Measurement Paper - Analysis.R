@@ -829,6 +829,13 @@ summrary(m.19)
 m.19.out <- round(summary(m.19)$coefficients,3)
 coefficients(m.19)
 
+## are we sure - for Simone's dissertation:
+Sdat1 <- rbind(dat3all.l,dat4.l)
+m.19 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=Sdat1)
+summary(m.19)  ## Simone - the combined data results
+
+
+
 library(xtable)
 library(R2HTML)
 HTML(print(xtable(m.19.out),type="html"),"Model19dat3.doc",sep="")
