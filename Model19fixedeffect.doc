@@ -1,0 +1,15 @@
+
+<p class='character'><!-- html table generated in R 3.2.5 by xtable 1.8-2 package -->
+<!-- Sat Apr 08 09:13:52 2017 -->
+<table border=1>
+<tr> <th>  </th> <th> Estimate </th> <th> Std. Error </th> <th> t value </th> <th> Pr(&gt;|t|) </th>  </tr>
+  <tr> <td align="right"> (Intercept) </td> <td align="right"> -0.3971 </td> <td align="right"> 0.4476 </td> <td align="right"> -0.89 </td> <td align="right"> 0.3750 </td> </tr>
+  <tr> <td align="right"> G </td> <td align="right"> 0.1668 </td> <td align="right"> 0.0561 </td> <td align="right"> 2.97 </td> <td align="right"> 0.0030 </td> </tr>
+  <tr> <td align="right"> U1 </td> <td align="right"> 0.5493 </td> <td align="right"> 0.0604 </td> <td align="right"> 9.10 </td> <td align="right"> 0.0000 </td> </tr>
+  <tr> <td align="right"> R </td> <td align="right"> 1.0231 </td> <td align="right"> 0.0750 </td> <td align="right"> 13.65 </td> <td align="right"> 0.0000 </td> </tr>
+  <tr> <td align="right"> G:U1 </td> <td align="right"> -0.0531 </td> <td align="right"> 0.0074 </td> <td align="right"> -7.14 </td> <td align="right"> 0.0000 </td> </tr>
+  <tr> <td align="right"> G:R </td> <td align="right"> -0.0322 </td> <td align="right"> 0.0095 </td> <td align="right"> -3.37 </td> <td align="right"> 0.0008 </td> </tr>
+  <tr> <td align="right"> U1:R </td> <td align="right"> -0.0605 </td> <td align="right"> 0.0105 </td> <td align="right"> -5.78 </td> <td align="right"> 0.0000 </td> </tr>
+  <tr> <td align="right"> G:U1:R </td> <td align="right"> 0.0072 </td> <td align="right"> 0.0013 </td> <td align="right"> 5.55 </td> <td align="right"> 0.0000 </td> </tr>
+   </table>
+</p>

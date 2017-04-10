@@ -858,6 +858,48 @@ summary(fitm2b)
 fitm2c <- sem(MedModel2,data=dat5.l,se="bootstrap")
 summary(fitm2c)
 
+## Combined data set 3/4 results from Pat's code using Sdat1
+# lavaan (0.5-23.1097) converged normally after  35 iterations
+# 
+# Used       Total
+# Number of observations                          2310        2384
+# 
+# Estimator                                         ML
+# Minimum Function Test Statistic             3100.072
+# Degrees of freedom                                 1
+# P-value (Chi-square)                           0.000
+# 
+# Parameter Estimates:
+#   
+#   Information                                 Observed
+# Standard Errors                            Bootstrap
+# Number of requested bootstrap draws             1000
+# Number of successful bootstrap draws            1000
+# 
+# Regressions:
+#                  Estimate  Std.Err  z-value  P(>|z|)
+# T ~                                                 
+#   GU1       (c1)   -0.006    0.002   -3.800    0.000
+# R ~                                                 
+#   GU1       (a1)    0.002    0.002    1.132    0.258
+# T ~                                                 
+#   RU2        (b)    0.030    0.003    9.364    0.000
+# 
+# Covariances:
+#                   Estimate  Std.Err  z-value  P(>|z|)
+# .T ~~                                                
+#   .R                 3.554    0.293   12.114    0.000
+# 
+# Variances:
+#                 Estimate  Std.Err  z-value  P(>|z|)
+# .T                 4.933    0.248   19.900    0.000
+# .R                 7.471    0.179   41.831    0.000
+# 
+# Defined Parameters:
+#                Estimate  Std.Err  z-value  P(>|z|)
+# inE               0.000    0.000    1.098    0.272
+# tot              -0.006    0.002   -3.691    0.000
+
 
 MedModel3 <- '
 T ~ c1*U1 + c2*G

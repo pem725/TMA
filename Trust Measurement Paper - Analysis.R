@@ -92,6 +92,79 @@ TrustDataFcn2 <- function(x=NULL,cut.time=10,source=NULL){
   return(out)
 }
 
+TrustDataFcn3 <- function(x1=NULL,cut.time=10,source=NULL){
+  dat <- read.csv(x1,header=T)
+  #datTIME <- as.numeric((strptime(as.character(dat$V9),"%Y-%m-%d %H:%M:%S") - strptime(as.character(dat$V8),"%Y-%m-%d %H:%M:%S"))/60)
+  datTIME <- as.numeric((strptime(as.character(dat$V9),"%m/%d/%Y %H:%M") - strptime(as.character(dat$V8),"%m/%d/%Y %H:%M"))/60)
+  ## Ngood <- table(datTIME > cut.time)
+  dat <- dat[datTIME > cut.time,]
+  dat$ID <- c(1:nrow(dat))
+  Tvars <- list(c("Q102","Q103","Q104","Q105","Q106","Q85","Q86"),
+                c("Q170","Q171","Q173","Q175","Q176","Q89","Q90"),
+                c("Q64","Q161","Q65","Q165","Q166","Q87","Q88"),
+                c("Q179","Q180","Q182","Q184","Q185","Q91","Q92"),
+                c("Q188","Q189","Q191","Q193","Q194","Q93","Q94"),
+                c("Q197","Q198","Q200","Q201","Q203","Q95","Q96"),
+                c("Q206","Q207","Q209","Q212","Q213","Q97","Q98"),
+                c("Q215","Q216","Q217","Q221","Q222","Q99","Q100"),
+                # Flyers
+                c("Q299","Q300","Q303","Q306","Q307","Q309","Q310"),
+                c("Q314","Q315","Q318","Q321","Q322","Q324","Q325"),
+                c("Q329","Q330","Q333","Q336","Q337","Q339","Q340"),
+                c("Q344","Q345","Q348","Q351","Q352","Q354","Q355"),
+                c("Q359","Q360","Q363","Q366","Q367","Q369","Q370"),
+                c("Q374","Q375","Q378","Q381","Q382","Q384","Q385"),
+                c("Q389","Q390","Q393","Q396","Q397","Q399","Q400"),
+                c("Q404","Q405","Q408","Q411","Q412","Q414","Q415"))
+  
+  out <- data.frame(id=NA,scen=NA,G=NA,U1=NA,U2=NA,R=NA,T=NA,B=NA,U3=NA)
+  for(i in 1:16){
+    tmp <- data.frame(id=dat$ID,scen=i,dat[,Tvars[[i]]])
+    names(tmp) <- c("id","scen","G","U1","U2","R","T","B","U3")
+    out <- rbind(out,tmp)
+  }
+  out$source <- source
+  out <- out[-1,]
+  return(out)
+}
+
+TrustDataFcn4 <- function(x2=NULL,cut.time=10,source=NULL){
+  dat <- read.csv(x2,header=T)
+  #datTIME <- as.numeric((strptime(as.character(dat$V9),"%Y-%m-%d %H:%M:%S") - strptime(as.character(dat$V8),"%Y-%m-%d %H:%M:%S"))/60)
+  datTIME <- as.numeric((strptime(as.character(dat$V9),"%m/%d/%Y %H:%M") - strptime(as.character(dat$V8),"%m/%d/%Y %H:%M"))/60)
+  ## Ngood <- table(datTIME > cut.time)
+  dat <- dat[datTIME > cut.time,]
+  dat$ID <- c(1:nrow(dat))
+  Tvars <- list(c("Q102","Q103","Q104","Q105","Q106","Q85","Q86"),
+                c("Q170","Q171","Q173","Q175","Q176","Q89","Q90"),
+                c("Q64","Q161","Q65","Q165","Q166","Q87","Q88"),
+                c("Q179","Q180","Q182","Q184","Q185","Q91","Q92"),
+                c("Q188","Q189","Q191","Q193","Q194","Q93","Q94"),
+                c("Q197","Q198","Q200","Q201","Q203","Q95","Q96"),
+                c("Q206","Q207","Q209","Q212","Q213","Q97","Q98"),
+                c("Q215","Q216","Q217","Q221","Q222","Q99","Q100"),
+                # MTurk
+                c("Q300","Q301","Q304","Q307","Q308","Q310","Q311"),
+                c("Q315","Q316","Q319","Q322","Q323","Q325","Q326"),
+                c("Q330","Q331","Q334","Q337","Q338","Q340","Q341"),
+                c("Q345","Q346","Q349","Q351","Q352","Q354","Q355"),
+                c("Q360","Q361","Q364","Q367","Q368","Q370","Q371"),
+                c("Q375","Q376","Q379","Q381","Q382","Q384","Q385"),
+                c("Q389","Q390","Q393","Q396","Q397","Q399","Q400"),
+                c("Q404","Q405","Q408","Q411","Q412","Q414","Q415"))
+  
+  out <- data.frame(id=NA,scen=NA,G=NA,U1=NA,U2=NA,R=NA,T=NA,B=NA,U3=NA)
+  for(i in 1:16){
+    tmp <- data.frame(id=dat$ID,scen=i,dat[,Tvars[[i]]])
+    names(tmp) <- c("id","scen","G","U1","U2","R","T","B","U3")
+    out <- rbind(out,tmp)
+  }
+  out$source <- source
+  out <- out[-1,]
+  return(out)
+}
+
+
 ## x <- "./Data/S5 Vignettes_Round_5__SONA.csv" ## for testing purposes only - UNCOMMENT if needed
 TraitMeasFcn <- function(x=NULL,cut.time=10,source=NULL){
   dat <- read.csv(x,header=T)
@@ -299,18 +372,18 @@ dat4.l <- TrustDataFcn("./Data/S4 Vignettes_Round_4__SONA__NewVigOnly.csv",5,"SO
 dat5s.l <- TrustDataFcn2("./Data/S5 Vignettes_Round_5__SONA.csv",10,"SONA")
 
 ######### :mTurk data ###############
-dat5m.l <- TrustDataFcn("./Data/S5 Vignettes_Round_5__MTurk.csv",10,"mTurk")
+dat5m.l <- TrustDataFcn4("./Data/S5 Vignettes_Round_5__MTurk.csv",10,"mTurk")
 
 ############ :Reddit data ##################
 #dat5r.l <- TrustDataFcn2("./Data/S5 Vignettes_Round_5__Reddit.csv",10,"Reddit")
 
 ############# :Flyer data ###################
-dat5f.l <- TrustDataFcn("./Data/S5 Vignettes_Round_5__Flyers.csv",10,"Flyers")
+dat5f.l <- TrustDataFcn3("./Data/S5 Vignettes_Round_5__Flyers.csv",20,"Flyers")
 
 ############# :Combine all Study 5 data files
 dat5all.l <- rbind(dat5s.l,dat5m.l,dat5f.l)
 dat5all.l$source <- as.factor(dat5all.l$source) # refactor the source for later
-
+table(dat5all.l$scen)
 
 ############################# CLEAN UP ENVIRONMENT #################################
 rm(list=ls()[!(ls() %in% c('dat1.l','dat2.l','dat3s.l','dat3m.l','dat3r.l','dat3f.l','dat4.l','dat3all.l','TrustDataFcn','TrustDataFcn2','subONE','QualBeh','Ufold','ETM.Fcn','dat5all.l'))])
@@ -366,13 +439,13 @@ S4 <- ETM.Fcn(dat4.l,"S4out.pdf")
 S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf")
 
 ############# Study 5 ----------
-S5a <- ETM.Fcn(subset(dat5all.l,dat5all.l$scen < 9),"S5outA.pdf")
-S5Ua <- ETM.Fcn(subset(dat5all.lUr,dat5all.lUr$scen < 9),"S5outTA.pdf")
+S5a <- ETM.Fcn(subset(dat5.l,dat5.l$scen < 9),"S5outA.pdf")
+S5Ua <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen < 9),"S5outTA.pdf")
 
-S5b <- ETM.Fcn(subset(dat5all.l,dat5all.l$scen > 8),"S5outB.pdf")
-S5Ub <- ETM.Fcn(subset(dat5all.lUr,dat5all.lUr$scen > 8),"S5outTB.pdf")
+S5b <- ETM.Fcn(subset(dat5.l,dat5.l$scen > 8),"S5outB.pdf")
+S5Ub <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen > 8),"S5outTB.pdf")
 
-S5 <- ETM.Fcn(dat5all.l,"S5out.pdf")
+S5 <- ETM.Fcn(dat5.l,"S5out.pdf")
 S5U <- ETM.Fcn(dat5all.lUr,"S5outT.pdf")
 
 
@@ -831,8 +904,71 @@ coefficients(m.19)
 
 ## are we sure - for Simone's dissertation:
 Sdat1 <- rbind(dat3all.l,dat4.l)
-m.19 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=Sdat1)
-summary(m.19)  ## Simone - the combined data results
+m.19.34 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=Sdat1)
+summary(m.19.34)  ## Simone - the combined data results
+
+# Fixed effects:
+#   Estimate Std. Error         df t value Pr(>|t|)    
+#   (Intercept)  7.768e-01  9.266e-01  1.240e+01   0.838 0.417729    
+#   G            1.317e-01  7.234e-02  2.250e+01   1.820 0.082090 .  
+#   U1           3.649e-01  7.126e-02  1.861e+02   5.121 7.56e-07 ***
+#   R            8.743e-01  1.097e-01  2.340e+01   7.973 4.06e-08 ***
+#   G:U1        -3.708e-02  8.297e-03  2.646e+02  -4.469 1.16e-05 ***
+#   G:R         -2.840e-02  1.008e-02  1.082e+03  -2.816 0.004949 ** 
+#   U1:R        -3.731e-02  1.076e-02  1.892e+03  -3.468 0.000536 ***
+#   G:U1:R       5.099e-03  1.298e-03  1.360e+03   3.930 8.93e-05 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+coefficients(m.19.34)
+# $scen
+# (Intercept)          G        U1         R        G:U1         G:R        U1:R      G:U1:R
+# 1   1.7455990 0.05110406 0.4950382 0.6980390 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 2   0.4639960 0.15767138 0.3712248 1.0476755 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 3   1.7295486 0.05243867 0.3493499 0.9210308 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 4   1.0314259 0.11048868 0.3305327 1.0166875 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 5  -1.1731920 0.29380617 0.3403643 0.4295692 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 6   0.5658734 0.14920011 0.3432174 1.0540858 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 7   1.0903201 0.10559154 0.3429476 1.0162971 -0.03708066 -0.02839474 -0.03730836 0.005099007
+# 8   0.7604526 0.13302054 0.3465621 0.8112053 -0.03708066 -0.02839474 -0.03730836 0.005099007
+
+## S2 lmer summary
+m.19.5 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat5.l)
+summary(m.19.5)  ## Simone - the combined data results
+
+# Fixed effects:
+#   Estimate Std. Error         df t value Pr(>|t|)    
+#   (Intercept)  2.609e+00  6.661e-01  2.730e+01   3.917 0.000543 ***
+#   G           -3.494e-02  6.721e-02  1.703e+02  -0.520 0.603791    
+#   U1           2.148e-01  6.150e-02  1.368e+02   3.493 0.000644 ***
+#   R            5.753e-01  8.638e-02  8.230e+01   6.660 2.87e-09 ***
+#   G:U1        -2.093e-02  7.179e-03  1.234e+03  -2.916 0.003614 ** 
+#   G:R         -3.214e-03  9.011e-03  2.651e+03  -0.357 0.721346    
+#   U1:R        -1.254e-02  8.928e-03  2.662e+03  -1.404 0.160416    
+#   G:U1:R       2.925e-03  1.041e-03  2.913e+03   2.809 0.005001 ** 
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+coefficients(m.19.5)
+# $scen
+# (Intercept)            G          U1         R        G:U1         G:R        U1:R      G:U1:R
+# 1   -0.1765720 -0.068753231 0.298013571 0.3880168 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 2    1.5478118 -0.004390015 0.196111372 0.8379465 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 3    2.3409806 -0.028728464 0.108006847 0.7178988 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 4    3.3861436 -0.035241662 0.229106142 0.7105715 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 5    1.7129846  0.219617957 0.153686692 0.1356922 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 6    2.5303451 -0.022185351 0.174983011 0.7662779 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 7    4.7183889 -0.099722825 0.182915560 0.6490968 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 8    4.5953697 -0.036641119 0.254479760 0.6650427 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 9   -1.7157746 -0.117274749 0.241591105 0.3349340 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 10   3.4502794 -0.068429007 0.149177783 0.6988675 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 11   2.6205951 -0.043757594 0.303564886 0.5454445 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 12   3.4730347 -0.110260453 0.338852046 0.3256550 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 13   2.0519377 -0.025205892 0.221637247 0.8773964 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 14   1.3135966  0.034932308 0.253374198 0.5997535 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 15   9.4815471 -0.215276427 0.324172107 0.3592040 -0.02093161 -0.00321407 -0.01253571 0.002924955
+# 16   0.4165199  0.062234972 0.007420797 0.5933464 -0.02093161 -0.00321407 -0.01253571 0.002924955
+
 
 
 
@@ -975,6 +1111,21 @@ d5$study <- 5
 ATD <- rbind(d3,d4,d5)
 ATD$study <- as.factor(ATD$study)
 ATD <- ATD[complete.cases(ATD),]
+
+## some EDA on ATD
+
+library(ggplot2)
+ggplot(ATD,aes(x=as.factor(scen),y=G)) + geom_boxplot(aes(col=as.factor(source)))
+ggplot(ATD,aes(x=as.factor(scen),y=U1)) + geom_boxplot(aes(col=as.factor(source)))
+ggplot(ATD,aes(x=as.factor(scen),y=R)) + geom_boxplot(aes(col=as.factor(source)))
+ggplot(ATD,aes(x=as.factor(scen),y=T)) + geom_boxplot(aes(col=as.factor(source)))
+ggplot(ATD,aes(x=as.factor(scen),y=B)) + geom_boxplot(aes(col=as.factor(source)))
+summary(ATD)
+library(psych)
+describe(ATD)
+pairs.panels(ATD)
+
+
 
 #write.csv(ATD,file="Data345.csv",row.names = F) ## do this once to just store it for future use
 #ATD <- read.csv("./Data345.csv",T)
