@@ -476,7 +476,7 @@ library(ggplot2)
 
 ########### Study 1 --------------
 dat1.l <- subONE(dat1.l,2:5)
-dat1.lUr <- Ufold(dat1.l,5)
+dat1.lUr <- Ufold(dat1.l,4)
 
 ########### Study 2 --------------
 dat2.lUr <- Ufold(dat2.l,5)
@@ -1128,7 +1128,7 @@ pca5 <- princomp(dat5.l[complete.cases(dat5.l[,c("G","U1","R")]),c("G","U1","R")
 round(summary(lm(dat5.l[complete.cases(dat5.l[,c("G","U1","R")]),"T"]~pca5$scores[,1]))$adj.r.squared,2)
 ### 13%
 
-########### LANTENT MODEL TESTED VIA EFA ##############
+########### LATENT MODEL TESTED VIA EFA ##############
 
 # Study 1
 efa1 <- factanal(dat1.l[complete.cases(dat1.l[,c("G","U","R")]),c("G","U","R")],1,scores="regression")
@@ -1316,18 +1316,34 @@ TraitMeasFcnDat1 <- function(x=NULL,cut.time=10,source=NULL){
   return(out)
 }
 
-# dat1 <- read.csv("./Data/S1 Trust Data - cleaned_Jan2016.csv", header=T)
-# S1traits <- dat1[,c(4,54:73,74:97,99:102,103:108,109,110:115,116:119,121:136,137:160,161:173,174:205,206:230,231:238,239:255,256:272)]
-# names(S1traits) <- c("id","GSS",paste("GTS",1:6,sep="."),paste("WVS",1:6,sep="."),paste("IUS",1:13,sep="."),paste("NGSE",1:9,sep="."),"mood","energy",paste("IPIP",1:21,sep="."),paste("LOTR",1:6,sep="."),paste("AUT",1:16,sep="."),"female","age","ethnicity","country","RelStatus","educ","employ","livingArr","income","religion") #,paste("ERI",1:32,sep="."),paste("BISBAS",1:24,sep="."))
-
-
-## Something is wrong here. Identify FIX.
-S1traits <- TraitMeasFcnDat1("./Data/S1 Trust Data - cleaned_Jan2016.csv",10,"mTurk")
+dat1 <- read.csv("./Data/S1 Trust Data - cleaned_Jan2016.csv", header=T)
+S1traits <- dat1[,c(4,54:73,74:97,99:102,103:108,109,110:115,116:119,121:136,137:160,161:173,174:205,206:230,231:238,239:255,256:272)]
+names(S1traits)
+names(S1traits) <- c("id",paste("IPIP",1:20,sep="."),paste("IRI",1:28,sep="."),paste("GTS",1:6,sep="."),"GSS",paste("WVS",1:6,sep="."),
+                     paste("MACHIV",1:20,sep="."),paste("BISBAS",1:24,sep="."),paste("RSQ",1:13,sep="."),paste("ERI",1:32,sep="."),
+                     paste("RITS",1:25,sep="."),paste("NGSE",1:8,sep="."),paste("BMIS1",1:16,sep="."),"BMIS2","female","DOB","age","ethnicity",
+                     "eth_text","country","local","RelStatus","Rel_text","educ","employ","employ_text","job","livingArr","livingArr_text","income","religion") 
+names(S1traits)
+S1traits <- S1traits[,c(1:202,204,205,207,209,211,212,214,215,217,218)]
+names(S1traits)
+S1traits$female <- S1traits$female-1
+S1traits$female <- as.factor(S1traits$female)
+S1traits$ethnicity <- as.factor(S1traits$ethnicity)
+S1traits$RelStatus <- as.factor(S1traits$RelStatus)
+S1traits$educ <- as.factor(S1traits$educ)
+S1traits$employ <- as.factor(S1traits$employ)
+S1traits$livingArr <- as.factor(S1traits$livingArr)
+S1traits$income <- as.factor(S1traits$income)
+S1traits$religion <- as.factor(S1traits$religion)
 str(S1traits)
-summary(complete.cases(S1traits))
+
+
+# ## Something is wrong here. Identify FIX.
+# S1traits <- TraitMeasFcnDat1("./Data/S1 Trust Data - cleaned_Jan2016.csv",10,"mTurk")
+# str(S1traits)
+# summary(complete.cases(S1traits))
 
 ## IRI 24, MACHIV 5 - CR variables 
-
 
 ## Study 2
 ## No data collected - vignette pilot
@@ -1385,12 +1401,11 @@ summary(complete.cases(S5traitsAll))
 
 ################################ General Trust Survey ##################################
 ## Study 1
-## FIX THIS
-# round(cor(S3traitsAll[,3:8],use="pairwise.complete.obs"),2)
-# factanal(S3traitsAll[complete.cases(S3traitsAll[,3:8]),3:8],2) ## two factors seem to fit best
-# S5traitsAll$GTS <- rowMeans(S3traitsAll[,3:8]) ## scoring routine - average across all 6 items
-# library(psych)
-# psych::alpha(S5traitsAll[,3:8])
+round(cor(S1traits[,50:55],use="pairwise.complete.obs"),2)
+factanal(S1traits[complete.cases(S1traits[,50:55]),50:55],2) ## two factors seem to fit best
+S1traits$GTS <- rowMeans(S1traits[,50:55]) ## scoring routine - average across all 6 items
+library(psych)
+psych::alpha(S1traits[,50:55])
 
 ## Study 3
 round(cor(S3traitsAll[,3:8],use="pairwise.complete.obs"),2)
@@ -1414,11 +1429,10 @@ psych::alpha(S5traitsAll[,3:8])
 
 ##################### World Values Survey - Trust Questions ############################
 ## Study 1
-## FIX THIS
-# round(cor(S5traitsAll[,],use="pairwise.complete.obs"),2)
-# factanal(S5traitsAll[complete.cases(S5traitsAll[,]),],2) ## two factors seem to fit best
-# S5traitsAll$WVS <- rowMeans(S5traitsAll[,]) ## due to high alpha, kept same scoring as GTS by average across all 6 items
-# psych::alpha(S5traitsAll[,])
+round(cor(S1traits[,57:62],use="pairwise.complete.obs"),2)
+factanal(S1traits[complete.cases(S1traits[,57:62]),57:62],2) ## two factors seem to fit best
+S1traits$WVS <- rowMeans(S1traits[,57:62]) ## due to high alpha, kept same scoring as GTS by average across all 6 items
+psych::alpha(S1traits[,57:62])
 
 ## Study 3
 round(cor(S3traitsAll[,9:14],use="pairwise.complete.obs"),2)
@@ -1447,13 +1461,185 @@ for (i in 3:9){
   S5vigSums <- merge(S5vigSums,tmp,by="id")
 }
 str(S5vigSums)
+
+
 S5all <- merge(dat5.w,S5traitsAll,by="id")
 S5all <- merge(S5all,S5vigSums,by="id")
 str(S5all)
 
 names(S5all)
 
+summary(lm(T.X~GSS+GTS+WVS+as.factor(female),data=S5all))
+summary(lm(T.X~G.X+U1.X+R.X+as.factor(female),data=S5all)) ## b=-0.041, 0.12%
+summary(lm(T.X~G.X+U1.X+R.X,data=S5all)) ## 72.3%
+summary(lm(T.X~G.X:U1.X:R.X+as.factor(female),data=S5all))
+summary(lm(T.X~G.X:U1.X:R.X,data=S5all))
 
+summary(lm(GSS~as.factor(female),data=S5all)) ## b=0.493, 2%
+summary(lm(GTS~as.factor(female),data=S5all)) ## b=0.195, 1%
+summary(lm(WVS~as.factor(female),data=S5all)) ## b=0.177, 2%
+summary(lm(T.X~as.factor(female),data=S5all)) ## b=-0.219, 0.2%
+
+## Dispositional trust ratings, women reported they were more trusting than men.  
+## However, scenario-based trust ratings, women on average were less trusting than men.
+
+##################### Rotter Interpersonal Trust Scale Questions ############################
+## Study 1
+round(cor(S1traits[,152:176],use="pairwise.complete.obs"),2)
+library(car)
+for (i in c(157,159,163,165,167,168,169,172,174,176)){
+  S1traits[,i] <- recode(S1traits[,i],"1=5;2=4;3=3;2=4;1=5")
+}
+factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],3) ##  three factors seem to fit best
+factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],4) 
+S1traits$RITS <- rowSums(S1traits[,152:176]) ## Means or sums?
+psych::alpha(S1traits[,152:176])
+
+## Finish these for Lisa
+# ################################# ERI ############################################
+
+S1traits$ERI <- rowSums(S1traits[,120:144]) ## Check sums vs means in scoring
+# factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],3) ##  three factors seem to fit best
+# factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],4) 
+psych::alpha(S1traits[,152:176])
+
+# ################################# IPIP ############################################
+
+round(cor(S1traits[,2:21],use="pairwise.complete.obs"),2)
+library(car)
+for (i in c("IPIP.6","IPIP.7","IPIP.8","IPIP.9","IPIP.10","IPIP.15","IPIP.16","IPIP.17","IPIP.18","IPIP.19","IPIP.20")){
+  S1traits[,i] <- recode(S1traits[,i],"1=5;2=4;3=3;2=4;1=5")
+}
+
+S1traits$IPIP.E <- rowSums(S1traits[,c("IPIP.1","IPIP.6","IPIP.11","IPIP.16")])
+S1traits$IPIP.A <- rowSums(S1traits[,c("IPIP.2","IPIP.7","IPIP.12","IPIP.17")])
+S1traits$IPIP.C <- rowSums(S1traits[,c("IPIP.3","IPIP.8","IPIP.13","IPIP.18")])
+S1traits$IPIP.N <- rowSums(S1traits[,c("IPIP.4","IPIP.9","IPIP.14","IPIP.19")])
+S1traits$IPIP.II <- rowSums(S1traits[,c("IPIP.5","IPIP.10","IPIP.15","IPIP.20")])
+ 
+S1traits$IPIP <- S1traits$IPIP.E + S1traits$IPIP.A + S1traits$IPIP.C + S1traits$IPIP.N + S1traits$IPIP.II
+#  
+# factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],3) ##  three factors seem to fit best
+# factanal(S1traits[complete.cases(S1traits[,152:176]),152:176],4) 
+psych::alpha(S1traits[,2:21])
+
+# 
+# ################################# NGSE ############################################
+
+round(cor(S1traits[,177:184],use="pairwise.complete.obs"),2)
+S1traits$NGSE <- rowSums(S1traits[,c(177:184)])
+psych::alpha(S1traits[,177:184])
+
+# ################################# BIS/BAS ############################################
+library(car)
+for (i in c(83,85:103,105:106)){
+  S1traits[,i] <- recode(S1traits[,i],"4=1;3=2;2=3;1=4")
+}
+
+## Drive
+S1traits$BAS_D <- rowSums(S1traits[,c(85,91,94,103)])
+psych::alpha(S1traits[,c(85,91,94,103)])
+
+## Fun Seeking
+S1traits$BAS_FS <- rowSums(S1traits[,c(87,92,97,102)])
+psych::alpha(S1traits[,c(87,92,97,102)])
+
+## Reward R**
+S1traits$BAS_RR <- rowSums(S1traits[,c(86,89,96,100,105)])
+psych::alpha(S1traits[,c(86,89,96,100,105)])
+
+## BIS
+S1traits$BIS <- rowSums(S1traits[,c(84,90,95,98,101,104,106)])
+psych::alpha(S1traits[,c(84,90,95,98,101,104,106)])
+
+## BAS
+S1traits$BAS <- rowSums(S1traits[,c(85,86,87,89,91,92,94,96,97,100,102,103,105)])
+psych::alpha(S1traits[,c(85,86,87,89,91,92,94,96,97,100,102,103,105)])
+
+round(cor(S1traits[,83:106],use="pairwise.complete.obs"),2)
+
+# ################################# BMIS ############################################
+# BMIS <- dat[,c(239:255)]
+# 
+# ## Pleasant-Unpleasant
+# BMIS1 <- BMIS
+# library(car)
+# for (i in c(3,4,7:10,12,15)){
+#   BMIS1[,i] <- recode(BMIS1[,i],"4=1;3=2;2=3;1=4")
+# }
+# 
+# BMIS$P <- rowSums(BMIS1[,c(1,2,5,6,11,13,14,16)])
+# BMIS$U <- rowSums(BMIS1[,c(3,4,7:10,12,15)])
+# BMIS$PU <- BMIS$P + BMIS$U
+# 
+# ## Arousal-Calm
+# BMIS2 <- BMIS
+# library(car)
+# for (i in c(4,13)){
+#   BMIS2[,i] <- recode(BMIS2[,i],"4=1;3=2;2=3;1=4")
+# }
+# 
+# BMIS$AC <- rowSums(BMIS2[,c(1,3:5,7,8,11:16)])
+# 
+# ## Positive-Tired
+# BMIS3 <- BMIS
+# library(car)
+# for (i in c(4,9)){
+#   BMIS3[,i] <- recode(BMIS3[,i],"4=1;3=2;2=3;1=4")
+# }
+# 
+# BMIS$PT <- rowSums(BMIS3[,c(1,4,5,9,11,14,16)])
+# 
+# ## Negative-Relaxed
+# BMIS4 <- BMIS
+# library(car)
+# for (i in c(13)){
+#   BMIS4[,i] <- recode(BMIS4[,i],"4=1;3=2;2=3;1=4")
+# }
+# 
+# BMIS$NR <- rowSums(BMIS4[,c(3,7,8,12,13,15)])
+
+
+####################### Correlation Plots for Trait Measures #######################
+
+S1traitall <- merge.data.frame(S1traits,dat1.l,by="id") 
+
+## Trait Trust Measures
+cor.plot(cor(S1traitall[,c(229,56,213,214,215)])) ## problems with this...graphics issue with the plotting. might be my RStudio
+round(cor(S1traitall[,c(229,56,213,214,215)],use="pairwise.complete.obs"),2)
+#          T   GSS   GTS   WVS  RITS
+# T     1.00  0.04  0.04 -0.05  0.04
+# GSS   0.04  1.00  0.81 -0.62  0.13
+# GTS   0.04  0.81  1.00 -0.63  0.04
+# WVS  -0.05 -0.62 -0.63  1.00 -0.16
+# RITS  0.04  0.13  0.04 -0.16  1.00
+
+## Trait Discriminant Measures
+cor.plot(cor(S1traitall[,c(229,227,228,223,216)])) ## problems with this...graphics issue with the plotting. might be my RStudio
+round(cor(S1traitall[,c(229,227,228,223,216)],use="pairwise.complete.obs"),2)
+#          T   BIS   BAS  NGSE   ERI
+# T     1.00 -0.04  0.02  0.05  0.00
+# BIS  -0.04  1.00 -0.10 -0.28 -0.05
+# BAS   0.02 -0.10  1.00  0.49  0.14
+# NGSE  0.05 -0.28  0.49  1.00  0.13
+# ERI   0.00 -0.05  0.14  0.13  1.00
+
+## Full Correlation Table - ETI, Trait Trust, Discriminant Measures
+cor.plot(cor(S1traitall[,c(229,230,231,232,56,213,214,215,227,228,223,216)])) ## problems with this...graphics issue with the plotting. might be my RStudio
+round(cor(S1traitall[,c(229,230,231,232,56,213,214,215,227,228,223,216)],use="pairwise.complete.obs"),2)
+#          T     G     U     R   GSS   GTS   WVS  RITS   BIS   BAS  NGSE   ERI
+# T     1.00  0.25 -0.49  0.39  0.04  0.04 -0.05  0.04 -0.04  0.02  0.05  0.00
+# G     0.25  1.00 -0.07  0.37  0.04  0.07 -0.10 -0.01  0.04  0.05  0.11  0.02
+# U    -0.49 -0.07  1.00 -0.07 -0.10 -0.11  0.06  0.01  0.07  0.09 -0.03  0.02
+# R     0.39  0.37 -0.07  1.00  0.06  0.04 -0.08  0.08  0.07  0.04  0.09  0.16
+# GSS   0.04  0.04 -0.10  0.06  1.00  0.81 -0.62  0.13 -0.18 -0.01  0.20  0.27
+# GTS   0.04  0.07 -0.11  0.04  0.81  1.00 -0.63  0.04 -0.17  0.10  0.33  0.24
+# WVS  -0.05 -0.10  0.06 -0.08 -0.62 -0.63  1.00 -0.16  0.10 -0.12 -0.34 -0.19
+# RITS  0.04 -0.01  0.01  0.08  0.13  0.04 -0.16  1.00 -0.10 -0.07  0.07  0.05
+# BIS  -0.04  0.04  0.07  0.07 -0.18 -0.17  0.10 -0.10  1.00 -0.10 -0.28 -0.05
+# BAS   0.02  0.05  0.09  0.04 -0.01  0.10 -0.12 -0.07 -0.10  1.00  0.49  0.14
+# NGSE  0.05  0.11 -0.03  0.09  0.20  0.33 -0.34  0.07 -0.28  0.49  1.00  0.13
+# ERI   0.00  0.02  0.02  0.16  0.27  0.24 -0.19  0.05 -0.05  0.14  0.13  1.00
 
 ####################### Trait Measure Analyses ################################
 ## Study 1
@@ -2344,6 +2530,100 @@ as.data.frame(VarCorr(A012))
 # [1] 0.27
 # > lmerICCest(A012,"study")
 # [1] 0.05
+
+########### ALL Traits ###################
+
+ATDvigSums <- data.frame(id=unique(ATD$id))
+for (i in 3:9){
+  tmp <- merge(aggregate(ATD[,i],by=list(ATD$id),mean),aggregate(ATD[,i],by=list(ATD$id),sd),by="Group.1")
+  names(tmp) <- c("id",paste(names(ATD)[i],"X",sep="."),paste(names(ATD)[i],"SD",sep="."))
+  ATDvigSums <- merge(ATDvigSums,tmp,by="id")
+}
+str(ATDvigSums)
+ATDall <- merge(ATD,ATDvigSums,by="id")
+str(ATDall)
+names(ATDall)
+
+S3traitsAlltrunc <- S3traitsAll[,c(1:14,35,36,78:87)]
+S5traitsAlltrunc <- S5traitsAll[,c(1:26)]
+Alltraits <- rbind(S3traitsAlltrunc,S5traitsAlltrunc)
+
+
+################################ General Trust Survey ##################################
+## see:  http://fetzer.org/sites/default/files/images/stories/pdf/selfmeasures/Self_Measures_for_Love_and_Compassion_Research_TRUST.pdf
+round(cor(Alltraits[,3:8],use="pairwise.complete.obs"),2)
+factanal(Alltraits[complete.cases(Alltraits[,3:8]),3:8],2) ## two factors seem to fit best
+Alltraits$GTS <- rowMeans(Alltraits[,3:8]) ## scoring routine - average across all 6 items
+library(psych)
+psych::alpha(Alltraits[,3:8])
+
+##################### World Values Survey - Trust Questions ############################
+round(cor(Alltraits[,9:14],use="pairwise.complete.obs"),2)
+factanal(Alltraits[complete.cases(Alltraits[,9:14]),9:14],2) ## two factors seem to fit best
+Alltraits$WVS <- rowMeans(Alltraits[,9:14]) ## due to high alpha, kept same scoring as GTS by average across all 6 items
+psych::alpha(Alltraits[,9:14])
+
+####################### Trait Measure Analyses ################################
+
+lmCS <- lm(T.X~GTS+WVS+as.factor(female)+followup,data=S5all)
+summary(lmCS)
+summary(lmCS)[complete.cases(S5all[,9:14]),9:14],2)  ## Why does this not work?  The parentheses aren't matched. Where should it go?
+
+lmCS2 <- lm(T.SD^2~GTS+WVS+as.factor(female)+followup,data=S5all) ## SD NOT variance
+
+
+lmCS3 <- lm(T.SD^2~GTS+WVS+mood,data=S5all) ## SD NOT variance
+summary(lmCS3)
+
+
+################################ Scale Validity/Reliability Analyses #########################################
+##### General trust survey (Trait) #####
+ctt.GTS <- psych::alpha(GTS[,4:9])
+ctt.GTS
+
+lm.gts <- lm(GTStotal~T*G*R*U1,data=S5all)
+summary(lm.gts)
+
+##### General social survey (Trait) #####
+lm.gss <- lm(GSS~GTStotal,data=S5all)
+summary(lm.gss)
+lm.gss1 <- lm(GSS~GTStotal+T+G*R*U1,data=S5all)
+summary(lm.gss1)
+
+##### World Values survey (Trait) #####
+ctt.WVS <- psych::alpha(WVS[,4:9])
+ctt.WVS
+
+lm.wvs <- lm(WVStotal~GSS,dat=S5all)
+summary(lm.wvs)
+lm.wvs1 <- lm(WVStotal~GTStotal,dat=S5all)
+summary(lm.wvs1)
+lm.wvs2 <- lm(WVStotal~GTStotal+GSS,dat=S5all)
+summary(lm.wvs2)
+lm.wvs3 <- lm(WVStotal~GTStotal+GSS+T+G*R*U1,dat=S5all)
+summary(lm.wvs3)
+
+#### Visual Analog Mood & Energy Scales #####
+dat2$MOOD <- MOOD$MOOD
+dat2$ENERGY <- ENERGY$ENERGY
+
+## Correlations of our variables and the trait totals
+
+## Study 3
+S3all.l <- merge(dat3all.l,S3traitsAll,by="id")
+str(S3all.l)
+names(S3all.l)
+
+cor.plot(cor(S3all.l[,c(3:9,11,98,97,44,45)])) ## problems with this...graphics issue with the plotting. might be my RStudio
+round(cor(S3all.l[,c(3:9,11,98,97,44,45)],use="pairwise.complete.obs"),2)
+
+
+
+
+
+
+
+
 
 ##################################################################################################
 ######################################## OLD CODE ################################################
