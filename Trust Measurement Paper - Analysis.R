@@ -297,7 +297,10 @@ dat.5$trustLVL <- 0
 dat1.l <- rbind(dat.1,dat.2,dat.3,dat.4,dat.5) ## NOTE change of name from original file
 names(dat1.l) <- c("id","T","G","R","U","scen","T.manip")
 dat1.l <- dat1.l[,c(1,2,3,5,4,6,7)]
-str(dat1.l)
+
+########### Data Recodeing for Study 1 --------------
+dat1.l <- subONE(dat1.l,2:5)
+dat1.lUr <- Ufold(dat1.l,5)
 
 ### Study 2 Data:  27 Vignette Post-Extensive Editing (N=9) ####
 tmp2 <- read.csv("./Data/S2 TrustVig2.csv",header=T)
@@ -322,6 +325,9 @@ names(dat8) <- c("id","scen","G.1","U.1","R.1","T.1","B.1","G.2","U.2","R.2","T.
 dat.l1 <- rbind(dat1,dat2,dat3,dat4,dat5,dat6,dat7,dat8)
 dat2.l <- reshape(dat.l1,varying=list(c(3,8,13),c(4,9,14),c(5,10,15),c(6,11,16),c(7,12,17)),direction="long",idvar='id',timevar="GROUP",v.names=c("G","U","R","T","B"),new.row.names =1:216)
 dat2.l <- dat2.l[,c(1,2,4,5,6,7,8,3)]
+
+########### Data Recoding for Study 2 --------------
+dat2.lUr <- Ufold(dat2.l,5)
 
 ### Study 3 Data:  9 of 27 Vignettes Presented with U broke into 3 - data from 3 sources #####
 
@@ -360,11 +366,21 @@ dat3r.l <- TrustDataFcn("./Data/S3 Vignettes_Round_3__Reddit.csv",10,"Reddit")
 dat3f.l <- TrustDataFcn("./Data/S3 Vignettes_Round_3__Flyers.csv",10,"Flyers")
 
 ############# :Combine all Study 3 data files
-dat3all.l <- rbind(dat3s.l,dat3m.l,dat3r.l,dat3f.l)
-dat3all.l$source <- as.factor(dat3all.l$source) # refactor the source for later
+dat3.l <- rbind(dat3s.l,dat3m.l,dat3r.l,dat3f.l)
+dat3.l$source <- as.factor(dat3.l$source) # refactor the source for later
+
+########## Data Recoding for Study 3 ---------------
+dat3.l <- subONE(dat3.l,c(3:7,9)) # subtract one from qualtrics data
+dat3.l <- QualBeh(dat3.l,8) # create binary behavior scale
+dat3.lUr <- Ufold(dat3.l,c(4,5,9)) # fold uncertainty scale
 
 ### Study 4 Data:  8 Vignettes Presented with U broke into 3 - data from SONA #####
 dat4.l <- TrustDataFcn("./Data/S4 Vignettes_Round_4__SONA__NewVigOnly.csv",5,"SONA")
+
+########## Data Recoding for Study 4 ---------------
+dat4.l <- subONE(dat4.l,c(3:7,9)) # subtract one from qualtrics data
+dat4.l <- QualBeh(dat4.l,8) # create binary behavior scale
+dat4.lUr <- Ufold(dat4.l,c(4,5,9)) # fold uncertainty scale
 
 ### Study 5 Data:  Simone's dissertation data
 
@@ -381,40 +397,13 @@ dat5m.l <- TrustDataFcn4("./Data/S5 Vignettes_Round_5__MTurk.csv",10,"mTurk")
 dat5f.l <- TrustDataFcn3("./Data/S5 Vignettes_Round_5__Flyers.csv",20,"Flyers")
 
 ############# :Combine all Study 5 data files
-dat5all.l <- rbind(dat5s.l,dat5m.l,dat5f.l)
-dat5all.l$source <- as.factor(dat5all.l$source) # refactor the source for later
-table(dat5all.l$scen)
+dat5.l <- rbind(dat5s.l,dat5m.l,dat5f.l)
+dat5.l$source <- as.factor(dat5.l$source) # refactor the source for later
+#table(dat5.l$scen)
 
-############################# CLEAN UP ENVIRONMENT #################################
-rm(list=ls()[!(ls() %in% c('dat1.l','dat2.l','dat3s.l','dat3m.l','dat3r.l','dat3f.l','dat4.l','dat3all.l','TrustDataFcn','TrustDataFcn2','subONE','QualBeh','Ufold','ETM.Fcn','dat5all.l'))])
-
-## reload packages
-library(car)
-library(psych)
-library(ggplot2)
-
-######################### DATA RECODING AND MANIPULATION ###########################
-
-########### Study 1 --------------
-dat1.l <- subONE(dat1.l,2:5)
-dat1.lUr <- Ufold(dat1.l,5)
-
-########### Study 2 --------------
-dat2.lUr <- Ufold(dat2.l,5)
-
-########## Study 3 ---------------
-dat3all.l <- subONE(dat3all.l,c(3:7,9)) # subtract one from qualtrics data
-dat3all.l <- QualBeh(dat3all.l,8) # create binary behavior scale
-dat3all.lUr <- Ufold(dat3all.l,c(4,5,9)) # fold uncertainty scale
-
-########## Study 4 ---------------
-dat4.l <- subONE(dat4.l,c(3:7,9)) # subtract one from qualtrics data
-dat4.l <- QualBeh(dat4.l,8) # create binary behavior scale
-dat4.lUr <- Ufold(dat4.l,c(4,5,9)) # fold uncertainty scale
-
-########## Study 5 ---------------
+########## Data Recoding for Study 5 ---------------
 dat5.l <- subONE(dat5all.l,c(3:7,9)) # subtract one from qualtrics data
-dat5.l <- QualBeh(dat5all.l,8) # create binary behavior scale
+dat5.l <- QualBeh(dat5.l,8) # create binary behavior scale
 dat5.lUr <- Ufold(dat5all.l,c(4,5,9)) # fold uncertainty scale
 
 ########################### LINEAR MODELS AND PLOTS ###################################
@@ -431,8 +420,8 @@ S2 <- ETM.Fcn(dat2.l,"S2out.pdf")
 S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf")
 
 ############# Study 3 ----------
-S3 <- ETM.Fcn(dat3all.l,"S3out.pdf")
-S3T <- ETM.Fcn(dat3all.l,"S3outT.pdf")
+S3 <- ETM.Fcn(dat3.l,"S3out.pdf")
+S3T <- ETM.Fcn(dat3.l,"S3outT.pdf")
 
 ############# Study 4 ----------
 S4 <- ETM.Fcn(dat4.l,"S4out.pdf")
@@ -446,8 +435,7 @@ S5b <- ETM.Fcn(subset(dat5.l,dat5.l$scen > 8),"S5outB.pdf")
 S5Ub <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen > 8),"S5outTB.pdf")
 
 S5 <- ETM.Fcn(dat5.l,"S5out.pdf")
-S5U <- ETM.Fcn(dat5all.lUr,"S5outT.pdf")
-
+S5U <- ETM.Fcn(dat5.lUr,"S5outT.pdf")
 
 ####################### Latent Variable Models ################
 
@@ -475,8 +463,6 @@ parameterEstimates(fit2)
 standardizedSolution(fit2)
 fitMeasures(fit2)
 modificationIndices(fit2,T,T)
-
-
 
 ### for the wide data
 ## Not a good fitting model.  
@@ -508,8 +494,8 @@ round(cor(dat2.l[,4:8],use="pairwise.complete.obs"),2)
 cor.plot(cor(dat2.l[,4:8],use="pairwise.complete.obs"))
 
 ### Study 3
-round(cor(dat3all.l[,3:9],use="pairwise.complete.obs"),2)
-cor.plot(cor(dat3all.l[,3:9],use="pairwise.complete.obs"))
+round(cor(dat3.l[,3:9],use="pairwise.complete.obs"),2)
+cor.plot(cor(dat3.l[,3:9],use="pairwise.complete.obs"))
 
 ### Study 4
 round(cor(dat4.l[,3:9],use="pairwise.complete.obs"),2)
@@ -534,20 +520,20 @@ round(cor(S5traits[,3:8],use="pairwise.complete.obs"),2)
 factanal(S5traits[complete.cases(S5traits[,3:8]),3:8],2) ## two factors seem to fit best
 S5traits$GTS <- rowMeans(S5traits[,3:8]) ## scoring routine - average across all 6 items
 library(psych)
-alpha(S5traits[,3:8])
+psych::alpha(S5traits[,3:8]) ## note, need to use the psych package reference here
 
 
 ### WVS
 round(cor(S5traits[,9:14],use="pairwise.complete.obs"),2)
 factanal(S5traits[complete.cases(S5traits[,9:14]),9:14],2) ## two factors seem to fit best
 S5traits$WVS <- rowMeans(S5traits[,9:14]) ## due to high alpha, kept same scoring as GTS by average across all 6 items
-alpha(S5traits[,9:14])
+psych::alpha(S5traits[,9:14])
 dat5.w <- reshape(dat5.l,v.names=names(dat5.l)[3:9],timevar="scen",idvar="id",direction="wide")
 #str(dat5.w)
 
 S5vigSums <- data.frame(id=unique(dat5.l$id))
 for (i in 3:9){
-  tmp <- merge(aggregate(dat5.l[,i],by=list(dat5.l$id),mean),aggregate(dat5.l[,i],by=list(dat5.l$id),sd),by="Group.1")
+  tmp <- merge(aggregate(dat5.l[,i],by=list(dat5.l$id),mean,na.rm=T),aggregate(dat5.l[,i],by=list(dat5.l$id),sd,na.rm=T),by="Group.1")
   names(tmp) <- c("id",paste(names(dat5.l)[i],"X",sep="."),paste(names(dat5.l)[i],"SD",sep="."))
   S5vigSums <- merge(S5vigSums,tmp,by="id")
 }
@@ -770,8 +756,7 @@ round(summary(lm(dat5.l[complete.cases(dat5.l[,c("G","U1","R")]),"T"]~efa1$score
 
 # how about transforming the trust components
 library(MASS)
-
-newdat3 <- dat3all.l[,c("G","U1","R","U2","T","B","U3")]
+newdat3 <- dat3.l[,c("G","U1","R","U2","T","B","U3")]
 newdat3 <- newdat3[complete.cases(newdat3),]
 
 # getlambda <- function(var,dv){
@@ -787,17 +772,17 @@ newdat3 <- newdat3[complete.cases(newdat3),]
 # newdat3$G.t <- getlambda(var=newdat3$G,dv=newdat3$T)
 # 
 
-outG <- boxcox(lm((G+1)~T,data=dat3all.l),plotit=F)
+outG <- boxcox(lm((G+1)~T,data=dat3.l),plotit=F)
 outG <- as.data.frame(outG)
 Glambda <- outG[outG$y == max(outG$y),1]
 newdat3$Gt <- (newdat3$G^Glambda - 1)/Glambda
 
-outU1 <- boxcox(lm((U1+1)~T,data=dat3all.l),plotit=F)
+outU1 <- boxcox(lm((U1+1)~T,data=dat3.l),plotit=F)
 outU1 <- as.data.frame(outU1)
 U1lambda <- outU1[outU1$y == max(outU1$y),1]
 newdat3$U1t <- (newdat3$U1^U1lambda - 1)/U1lambda
 
-outR <- boxcox(lm((R+1)~T,data=dat3all.l),plotit=F)
+outR <- boxcox(lm((R+1)~T,data=dat3.l),plotit=F)
 outR <- as.data.frame(outR)
 Rlambda <- outR[outR$y == max(outR$y),1]
 newdat3$Rt <- (newdat3$R^Rlambda - 1)/Rlambda
@@ -813,8 +798,8 @@ summary(lm(T~Gt:U1t:Rt,data=newdat3))
 
 ## cycle through exponents for X to determine the best fit
 
-tmp <- dat3all.l
-tmp$GUR <- dat3all.l$G*dat3all.l$U1*dat3all.l$R
+tmp <- dat3.l
+tmp$GUR <- dat3.l$G*dat3.l$U1*dat3.l$R
 
 outRsq <- data.frame(Exp=NA,AdjR2=NA)
 for (i in seq(.1,5,by=.1)){
@@ -830,7 +815,7 @@ outRsq[outRsq$AdjR2==max(outRsq$AdjR2),]
 ## R exp: 1
 ## NO BENEFIT TO TRANSFORMING GUR as a composite
 
-dat3tmp <- dat3all.l
+dat3tmp <- dat3.l
 dat3tmp$G3 <- dat3tmp$G^3
 dat3tmp$U1.4 <- dat3tmp$U1^.4
 ggplot(dat3tmp,aes(x=G3,y=T)) + geom_smooth(col="green") + ylim(0,10)
@@ -853,47 +838,47 @@ pGUR
 
 round(cor(x=dat3tmp[,c("G","U1","R")],y=dat3tmp$GUR,use="pairwise.complete.obs"),2)
 
-lm3all <- lm(T~G:U1:R,data=dat3all.l)
+lm3all <- lm(T~G:U1:R,data=dat3.l)
 summary(lm3all)
 
 ##### Linear mixed-effects models ########
 
 library(lme4)
-m.0 <- lmer(T~ 1 + (1|id), data=dat3all.l)
-m.1 <- lmer(T~ G + (1|id), data=dat3all.l)
-m.2 <- lmer(T~ G + (G|id), data=dat3all.l)
-m.3 <- lmer(T~ G + U1 + (1|id), data=dat3all.l)
-m.4 <- lmer(T~ G*U1 + (1|id), data=dat3all.l)
-m.5 <- lmer(T~ G*U1 + (G|id), data=dat3all.l)
-m.6 <- lmer(T~ G*U1 + (G|id) + (U1|id), data=dat3all.l)
-m.7 <- lmer(T~ G*U1 + R + (1|id), data=dat3all.l)
-m.8 <- lmer(T~ G*U1*R + (1|id), data=dat3all.l)
-m.9 <- lmer(T~ G*U1*R + (G|id) + (U1|id) + (R|id), data=dat3all.l)
+m.0 <- lmer(T~ 1 + (1|id), data=dat3.l)
+m.1 <- lmer(T~ G + (1|id), data=dat3.l)
+m.2 <- lmer(T~ G + (G|id), data=dat3.l)
+m.3 <- lmer(T~ G + U1 + (1|id), data=dat3.l)
+m.4 <- lmer(T~ G*U1 + (1|id), data=dat3.l)
+m.5 <- lmer(T~ G*U1 + (G|id), data=dat3.l)
+m.6 <- lmer(T~ G*U1 + (G|id) + (U1|id), data=dat3.l)
+m.7 <- lmer(T~ G*U1 + R + (1|id), data=dat3.l)
+m.8 <- lmer(T~ G*U1*R + (1|id), data=dat3.l)
+m.9 <- lmer(T~ G*U1*R + (G|id) + (U1|id) + (R|id), data=dat3.l)
 anova(m.0,m.1,m.2,m.3,m.4,m.5,m.6,m.7,m.8,m.9) ## m.7 winner winner chicken dinner
 
-m.10 <- lmer(T~ G:U1:R + (1|id), data=dat3all.l)
+m.10 <- lmer(T~ G:U1:R + (1|id), data=dat3.l)
 anova(m.7,m.10) ## m.7 defends the crown
-m.11 <- lmer(T~G:U1 + R + (1|id),data=dat3all.l)
-m.12 <- lmer(T~G:U1 + R + (R|id),data=dat3all.l)
+m.11 <- lmer(T~G:U1 + R + (1|id),data=dat3.l)
+m.12 <- lmer(T~G:U1 + R + (R|id),data=dat3.l)
 anova(m.7,m.11,m.12) ## m.7 reigning champ
 
-m.13 <- lmer(T~G:U1 + R + (1|scen),data=dat3all.l)
+m.13 <- lmer(T~G:U1 + R + (1|scen),data=dat3.l)
 anova(m.7,m.13) ## m.13 new winner
-m.14 <- lmer(T~G:U1:R + (1|scen),data=dat3all.l)
-m.15 <- lmer(T~G:U1 + R + (R|scen),data=dat3all.l)
-m.16 <- lmer(T~G:U1 + R + (G:U1|scen),data=dat3all.l)
-m.17 <- lmer(T~G:U1 + R + (R|scen) + (G:U1|scen),data=dat3all.l)
+m.14 <- lmer(T~G:U1:R + (1|scen),data=dat3.l)
+m.15 <- lmer(T~G:U1 + R + (R|scen),data=dat3.l)
+m.16 <- lmer(T~G:U1 + R + (G:U1|scen),data=dat3.l)
+m.17 <- lmer(T~G:U1 + R + (R|scen) + (G:U1|scen),data=dat3.l)
 anova(m.13,m.15,m.16,m.17)  ## m.15 winner so far.  Any contenders?
 
 anova(m.15,m.17)  ## technically, m.17 outperforms m.15
 
 ## one more...
-m.18 <- lmer(T~G:U1 + R + (R|scen) + (G:U1|id),data=dat3all.l)
-m.19 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat3all.l)
+m.18 <- lmer(T~G:U1 + R + (R|scen) + (G:U1|id),data=dat3.l)
+m.19 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=dat3.l)
 anova(m.15,m.17,m.19)
 
 ## compare m.19 to the lm3
-lm3.all <- lm(T~G*U1*R,data=dat3all.l)
+lm3.all <- lm(T~G*U1*R,data=dat3.l)
 anova(m.19,lm3.all)
 
 ### WE HAVE A WINNER - m.19
@@ -903,7 +888,7 @@ m.19.out <- round(summary(m.19)$coefficients,3)
 coefficients(m.19)
 
 ## are we sure - for Simone's dissertation:
-Sdat1 <- rbind(dat3all.l,dat4.l)
+Sdat1 <- rbind(dat3.l,dat4.l)
 m.19.34 <- lmer(T~ G*U1*R + (G|scen) + (U1|scen) + (R|scen), data=Sdat1)
 summary(m.19.34)  ## Simone - the combined data results
 
@@ -968,9 +953,6 @@ coefficients(m.19.5)
 # 14   1.3135966  0.034932308 0.253374198 0.5997535 -0.02093161 -0.00321407 -0.01253571 0.002924955
 # 15   9.4815471 -0.215276427 0.324172107 0.3592040 -0.02093161 -0.00321407 -0.01253571 0.002924955
 # 16   0.4165199  0.062234972 0.007420797 0.5933464 -0.02093161 -0.00321407 -0.01253571 0.002924955
-
-
-
 
 library(xtable)
 library(R2HTML)
@@ -1041,7 +1023,7 @@ summary(lm(m19.R.2b))
 
 #### ICC estimates by study #####
 ## be sure to load the lmerICCest (see below)
-ic3 <- lmer(T~1 + (1|id) + (1|scen), data=dat3all.l)
+ic3 <- lmer(T~1 + (1|id) + (1|scen), data=dat3.l)
 lmerICCest(ic3,"id") # 0.08
 lmerICCest(ic3,"scen") # 0.36
 ic4 <- lmer(T~1 + (1|id) + (1|scen), data=dat4.l)
@@ -1101,15 +1083,18 @@ library(rstan)
 ################### CREATE ONE MASSIVE DATASET ########################
 
 ## select only those datasets with U was broken apart
-d3 <- dat3all.l
+d3 <- dat3.l
 d3$study <- 3
 d4 <- dat4.l
 d4$study <- 4
-d5 <- dat5all.l
+d5 <- dat5.l
 d5$study <- 5
 
 ATD <- rbind(d3,d4,d5)
 ATD$study <- as.factor(ATD$study)
+summary(ATD)
+library(Amelia)
+missmap(ATD) ## yo yo, check it out.  Pretty cool, eh?
 ATD <- ATD[complete.cases(ATD),]
 
 ## some EDA on ATD
@@ -1125,8 +1110,7 @@ library(psych)
 describe(ATD)
 pairs.panels(ATD)
 
-
-
+## don't do this again unless necessary (i.e., fixed something in the data frames)
 #write.csv(ATD,file="Data345.csv",row.names = F) ## do this once to just store it for future use
 #ATD <- read.csv("./Data345.csv",T)
 
@@ -1165,14 +1149,33 @@ summary(A012GURri)
 ## x:  an lmer object
 ## facet:  the level of generalization you wish to assess (ordered in the lmer object)
 
-
 lmerICCest(A012,"id")
 lmerICCest(A012,"scen")
 lmerICCest(A012,"study")
 as.data.frame(VarCorr(A012))
 
-
 predict(A012GURri)
 
-## something new here
+##### Emergent-latent paper analysis CFA ####
 
+library(lavaan)
+library(semTools)
+ETI.ms.model <- 'trust =~ G + U1 + R'
+fit.ETI.ms <- cfa(ETI.ms.model,data=ATD,group="scen",group.equal=c("loadings"))
+##measurementInvariance(ETI.ms.model,data=ATD,group="scen")
+summary(fit.ETI.ms)
+fitmeasures(fit.ETI.ms)
+## certainly not invariant across vignetts fo sho.
+
+
+ETI.cfa.all <- cfa(ETI.ms.model,data=ATD)
+summary(ETI.cfa.all)
+fitmeasures(ETI.cfa.all)
+## whoa!  perfect fit for the cfa model.  Something fishy.
+
+
+## hmmmm, no convergence here.  Bummer
+ETI.full.model <- 'trust =~ G + U1 + R
+                T ~ trust'
+ETI.full <- sem(ETI.full.model,data=ATD)
+summary(ETI.full)
