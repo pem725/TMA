@@ -1179,3 +1179,43 @@ ETI.full.model <- 'trust =~ G + U1 + R
                 T ~ trust'
 ETI.full <- sem(ETI.full.model,data=ATD)
 summary(ETI.full)
+
+## create table of correlations between G, U1, and R by scen
+#GU1Rcorr <- data.frame(scen=NA,GU1=NA,GR=NA,U1R=NA,GT=NA,U1T=NA,RT=NA)
+outTMP1 <- data.frame(scen=NA,rel=NA,r=NA)
+for (i in 1:16){
+  tmp <- round(cor(ATD[ATD$scen==i,3:9]),2)
+  tmp <- as.data.frame(as.table(tmp[lower.tri(tmp)]))
+  names(tmp) <- c("rel","r")
+  tmp$rel <- c("GU1","GU2","GR","GT","GB","GU3","U1U2","U1R","U1T","U1B","U1U3","U2R","U2T","U2B","U2U3","RT","RB","RU3","TB","TU3","BU3")
+  tmp$scen <- i
+  tmp <- tmp[,c("scen","rel","r")]
+  outTMP1 <- rbind(outTMP1,tmp)
+}
+outTMP1 <- outTMP1[-1,]
+outTMP1$scen <- as.factor(outTMP1$scen)
+outTMP1$rel <- as.factor(outTMP1$rel)
+outTMP1
+
+library(ggplot2)
+ggplot(outTMP1,aes(x=r,fill=rel)) + geom_density(alpha=.3)
+
+## just for G, U1, and R
+
+outTMP2 <- data.frame(scen=NA,rel=NA,r=NA)
+for (i in 1:16){
+  tmp <- round(cor(ATD[ATD$scen==i,c(3,4,6)]),2)
+  tmp <- as.data.frame(as.table(tmp[lower.tri(tmp)]))
+  names(tmp) <- c("rel","r")
+  tmp$rel <- c("GU1","GR","U1R")
+  tmp$scen <- i
+  tmp <- tmp[,c("scen","rel","r")]
+  outTMP2 <- rbind(outTMP2,tmp)
+}
+outTMP2 <- outTMP2[-1,]
+outTMP2$scen <- as.factor(outTMP2$scen)
+outTMP2$rel <- as.factor(outTMP2$rel)
+outTMP2
+
+ggplot(outTMP2,aes(x=r,fill=rel)) + geom_density(alpha=.3)
+

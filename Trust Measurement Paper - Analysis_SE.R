@@ -1056,6 +1056,51 @@ cor.plot(cor(dat4.l[,3:9],use="pairwise.complete.obs"))
 round(cor(dat5.l[,3:9],use="pairwise.complete.obs"),2)
 cor.plot(cor(dat5.l[,3:9],use="pairwise.complete.obs"))
 
+### Descriptives
+## Study 1
+library(doBy)
+
+summaryBy(T~scen, data=dat1.l, FUN=c(mean,sd))
+#   scen   T.mean     T.sd
+# 1    1 9.303371 1.621916
+# 2    2 7.157303 1.771710
+# 3    3 5.067416 2.106207
+# 4    4 3.438202 2.244668
+# 5    5 1.544944 2.178659
+
+summaryBy(G~scen, data=dat1.l, FUN=c(mean,sd))
+#   scen   G.mean     G.sd
+# 1    1 8.780899 2.102534
+# 2    2 8.348315 2.139756
+# 3    3 7.803371 2.486254
+# 4    4 7.348315 2.597701
+# 5    5 7.101124 3.164224
+
+summaryBy(R~scen, data=dat1.l, FUN=c(mean,sd))
+#   scen   R.mean     R.sd
+# 1    1 8.887640 2.093510
+# 2    2 8.106742 2.046041
+# 3    3 7.365169 2.598635
+# 4    4 6.674157 3.145350
+# 5    5 5.949438 3.827159
+
+# Unflipped
+summaryBy(U~scen, data=dat1.l, FUN=c(mean,sd))
+#   scen   U.mean     U.sd
+# 1    1 2.151685 3.166656
+# 2    2 5.174157 2.736653
+# 3    3 6.651685 2.235316
+# 4    4 6.910112 2.714849
+# 5    5 6.904494 3.521826
+
+# Flipped
+summaryBy(U~scen, data=dat1.lUr, FUN=c(mean,sd))
+#   scen   U.mean     U.sd
+# 1    1 1.988764 2.864134
+# 2    2 5.426966 3.008041
+# 3    3 5.685393 3.498492
+# 4    4 4.179775 3.176758
+# 5    5 2.730337 3.325179
 
 ########### EMERGENT MODEL TESTED VIA PCA ##############
 
