@@ -404,7 +404,7 @@ dat5.l$source <- as.factor(dat5.l$source) # refactor the source for later
 ########## Data Recoding for Study 5 ---------------
 dat5.l <- subONE(dat5all.l,c(3:7,9)) # subtract one from qualtrics data
 dat5.l <- QualBeh(dat5.l,8) # create binary behavior scale
-dat5.lUr <- Ufold(dat5all.l,c(4,5,9)) # fold uncertainty scale
+dat5.lUr <- Ufold(dat5.l,c(4,5,9)) # fold uncertainty scale
 
 ########################### LINEAR MODELS AND PLOTS ###################################
 
@@ -421,7 +421,7 @@ S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf")
 
 ############# Study 3 ----------
 S3 <- ETM.Fcn(dat3.l,"S3out.pdf")
-S3T <- ETM.Fcn(dat3.l,"S3outT.pdf")
+S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf")
 
 ############# Study 4 ----------
 S4 <- ETM.Fcn(dat4.l,"S4out.pdf")
