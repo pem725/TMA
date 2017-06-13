@@ -411,31 +411,31 @@ dat5.lUr <- Ufold(dat5.l,c(4,5,9)) # fold uncertainty scale
 ############# Study 1 ----------
 
 ## note - the change in columns
-S1 <- ETM.Fcn(dat1.l,"S1out.pdf")
+S1 <- ETM.Fcn(dat1.l,"S1out.pdf") ## report this one
 S1T <- ETM.Fcn(dat1.lUr,"S1outT.pdf")
 
 ############# Study 2 ----------
 
-S2 <- ETM.Fcn(dat2.l,"S2out.pdf")
-S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf")
+S2 <- ETM.Fcn(dat2.l,"S2out.pdf") 
+S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf") ## report this one
 
 ############# Study 3 ----------
 S3 <- ETM.Fcn(dat3.l,"S3out.pdf")
-S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf")
+S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf") ## report this one
 
 ############# Study 4 ----------
 S4 <- ETM.Fcn(dat4.l,"S4out.pdf")
-S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf")
+S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf") ## report this one
 
 ############# Study 5 ----------
 S5a <- ETM.Fcn(subset(dat5.l,dat5.l$scen < 9),"S5outA.pdf")
-S5Ua <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen < 9),"S5outTA.pdf")
+S5Ta <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen < 9),"S5outTA.pdf")
 
 S5b <- ETM.Fcn(subset(dat5.l,dat5.l$scen > 8),"S5outB.pdf")
-S5Ub <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen > 8),"S5outTB.pdf")
+S5Tb <- ETM.Fcn(subset(dat5.lUr,dat5.lUr$scen > 8),"S5outTB.pdf")
 
 S5 <- ETM.Fcn(dat5.l,"S5out.pdf")
-S5U <- ETM.Fcn(dat5.lUr,"S5outT.pdf")
+S5T <- ETM.Fcn(dat5.lUr,"S5outT.pdf") ## report this one
 
 ####################### Latent Variable Models ################
 
@@ -1097,6 +1097,30 @@ library(Amelia)
 missmap(ATD) ## yo yo, check it out.  Pretty cool, eh?
 ATD <- ATD[complete.cases(ATD),]
 
+## create ATD.U
+d3 <- dat3.lUr
+d3$study <- 3
+d4 <- dat4.lUr
+d4$study <- 4
+d5 <- dat5.lUr
+d5$study <- 5
+
+ATD.U <- rbind(d3,d4,d5)
+ATD.U$study <- as.factor(ATD.U$study)
+summary(ATD.U)
+library(Amelia)
+missmap(ATD.U) ## yo yo, check it out.  Pretty cool, eh?
+ATD.U <- ATD.U[complete.cases(ATD.U),]
+
+### NOTE:  Based upon our discussion on 6/13/17, we decided we need to report
+### the U results rather than the untransfored Uncertainty results because the
+### former are more consistent with our measurement model.
+
+pairs.panels(ATD.U)
+
+round(cor(ATD[,c(3:7)]),2)
+round(cor(ATD.U[,c(3:7)]),2)
+
 ## some EDA on ATD
 
 library(ggplot2)
@@ -1156,7 +1180,88 @@ as.data.frame(VarCorr(A012))
 
 predict(A012GURri)
 
-##### Emergent-latent paper analysis CFA ####
+
+################## Emergent-latent paper analyses ########################
+
+##### Study 1 #####
+round(cor(dat1.l[,c(3:5,2,7)]),2)
+tmp1 <- dat1.l
+factanal(tmp1[,c(3:5)],1)
+tmp1$efaT <- factanal(tmp1[,c(3:5)],1,scores="regression")$scores
+as.numeric(round(cor(tmp1$efaT,tmp1$T),2)^2)
+library(lavaan)
+LVmodel <- '
+F =~ G + U + R
+T ~ F
+'
+fit <- cfa(LVmodel,data=dat1.l,auto.fix.first=T)
+summary(fit, fit.measures=TRUE)
+parameterEstimates(fit)
+standardizedSolution(fit)
+fitMeasures(fit)
+S1 <- ETM.Fcn(dat1.l,"S1out.pdf") ## emergent model results
+
+##### Study 2 #####
+round(cor(dat2.lUr[,c(3:6)]),2)
+tmp2 <- dat2.lUr
+factanal(tmp2[,c(3:5)],1)
+tmp2$efaT <- factanal(tmp2[,c(3:5)],1,scores="regression")$scores
+as.numeric(round(cor(tmp2$efaT,tmp2$T),2)^2)
+fit <- cfa(LVmodel,data=dat2.lUr,auto.fix.first=T)
+summary(fit, fit.measures=TRUE)
+parameterEstimates(fit)
+standardizedSolution(fit)
+fitMeasures(fit)
+S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf") ## report this one
+
+##### Study 3 #####
+round(cor(dat3.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+tmp3 <- dat3.lUr[complete.cases(dat3.lUr),]
+factanal(tmp3[,c(3,4,6)],1)
+tmp3$efaT <- factanal(tmp3[,c(3,4,6)],1,scores="regression")$scores
+as.numeric(round(cor(tmp3$efaT,tmp3$T),2)^2)
+LVmodel2 <- '
+F =~ G + U1 + R
+T ~ F
+'
+fit <- cfa(LVmodel2,data=dat3.lUr,auto.fix.first=T)
+summary(fit, fit.measures=TRUE)
+parameterEstimates(fit)
+standardizedSolution(fit)
+fitMeasures(fit)
+S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf") ## report this one
+
+##### Study 4 #####
+round(cor(dat4.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+tmp4 <- dat4.lUr[complete.cases(dat4.lUr),]
+factanal(tmp4[,c(3,4,6)],1)
+tmp4$efaT <- factanal(tmp4[,c(3,4,6)],1,scores="regression")$scores
+as.numeric(round(cor(tmp4$efaT,tmp4$T),2)^2)
+fit <- cfa(LVmodel2,data=dat4.lUr,auto.fix.first=T)
+summary(fit, fit.measures=TRUE)
+parameterEstimates(fit)
+standardizedSolution(fit)
+fitMeasures(fit)
+S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf") ## report this one
+
+############# Study 5 ----------
+round(cor(dat5.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+tmp5 <- dat5.lUr[complete.cases(dat5.lUr),]
+factanal(tmp5[,c(3,4,6)],1)
+tmp5$efaT <- factanal(tmp5[,c(3,4,6)],1,scores="regression")$scores
+as.numeric(round(cor(tmp5$efaT,tmp5$T),2)^2)
+LVmodel2 <- '
+F =~ G + U1 + R
+T ~ F
+'
+fit <- cfa(LVmodel2,data=dat5.lUr,auto.fix.first=T)
+summary(fit, fit.measures=TRUE)
+parameterEstimates(fit)
+standardizedSolution(fit)
+fitMeasures(fit)
+S5T <- ETM.Fcn(dat5.lUr,"S5outT.pdf") ## report this one
+
+
 
 library(lavaan)
 library(semTools)
