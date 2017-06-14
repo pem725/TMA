@@ -1200,6 +1200,8 @@ parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S1 <- ETM.Fcn(dat1.l,"S1out.pdf") ## emergent model results
+summary(lm(T~G*U*R,data=dat1.l))
+
 
 ##### Study 2 #####
 round(cor(dat2.lUr[,c(3:6)]),2)
@@ -1213,6 +1215,8 @@ parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf") ## report this one
+summary(lm(T~G*U*R,data=dat2.lUr))
+
 
 ##### Study 3 #####
 round(cor(dat3.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
@@ -1230,6 +1234,7 @@ parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf") ## report this one
+summary(lm(T~G*U1*R,data=dat3.lUr))
 
 ##### Study 4 #####
 round(cor(dat4.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
@@ -1243,6 +1248,7 @@ parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf") ## report this one
+summary(lm(T~G*U1*R,data=dat4.lUr))
 
 ############# Study 5 ----------
 round(cor(dat5.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
