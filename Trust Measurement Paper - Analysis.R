@@ -1183,12 +1183,20 @@ predict(A012GURri)
 
 ################## Emergent-latent paper analyses ########################
 
+## Table 1:  Correlation Table by study - include latent and lm results too
+## Figure 1:  Bivariate plots of G, U, and R vs. T by study
+## Table 2:  Means and SD of G, U, R, and T by study
+## Figure 2:  Prediction plots for Low and High G, U, and R as fcn of T
+
+
+
 ##### Study 1 #####
 round(cor(dat1.l[,c(3:5,2,7)]),2)
+CT1 <- round(cor(dat1.l[,c(3:5,2,7)]),2)
 tmp1 <- dat1.l
 factanal(tmp1[,c(3:5)],1)
 tmp1$efaT <- factanal(tmp1[,c(3:5)],1,scores="regression")$scores
-as.numeric(round(cor(tmp1$efaT,tmp1$T),2)^2)
+EFA1 <- round(as.numeric(round(cor(tmp1$efaT,tmp1$T),2)^2),2)
 library(lavaan)
 LVmodel <- '
 F =~ G + U + R
@@ -1201,29 +1209,31 @@ standardizedSolution(fit)
 fitMeasures(fit)
 S1 <- ETM.Fcn(dat1.l,"S1out.pdf") ## emergent model results
 summary(lm(T~G*U*R,data=dat1.l))
-
+ETI1 <- round(summary(lm(T~G:U:R,data=dat1.l))$r.squared,2)
 
 ##### Study 2 #####
 round(cor(dat2.lUr[,c(3:6)]),2)
+CT2 <- round(cor(dat2.lUr[,c(3:6)]),2)
 tmp2 <- dat2.lUr
 factanal(tmp2[,c(3:5)],1)
 tmp2$efaT <- factanal(tmp2[,c(3:5)],1,scores="regression")$scores
-as.numeric(round(cor(tmp2$efaT,tmp2$T),2)^2)
+EFA2 <- round(as.numeric(round(cor(tmp2$efaT,tmp2$T),2)^2),2)
 fit <- cfa(LVmodel,data=dat2.lUr,auto.fix.first=T)
 summary(fit, fit.measures=TRUE)
 parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S2T <- ETM.Fcn(dat2.lUr,"S2outT.pdf") ## report this one
-summary(lm(T~G*U*R,data=dat2.lUr))
-
+str(summary(lm(T~G*U*R,data=dat2.lUr)))
+ETI2 <- round(summary(lm(T~G:U:R,data=dat2.lUr))$r.squared,2)
 
 ##### Study 3 #####
 round(cor(dat3.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+CT3 <- round(cor(dat3.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
 tmp3 <- dat3.lUr[complete.cases(dat3.lUr),]
 factanal(tmp3[,c(3,4,6)],1)
 tmp3$efaT <- factanal(tmp3[,c(3,4,6)],1,scores="regression")$scores
-as.numeric(round(cor(tmp3$efaT,tmp3$T),2)^2)
+EFA3 <- round(as.numeric(round(cor(tmp3$efaT,tmp3$T),2)^2),2)
 LVmodel2 <- '
 F =~ G + U1 + R
 T ~ F
@@ -1235,13 +1245,15 @@ standardizedSolution(fit)
 fitMeasures(fit)
 S3T <- ETM.Fcn(dat3.lUr,"S3outT.pdf") ## report this one
 summary(lm(T~G*U1*R,data=dat3.lUr))
+ETI3 <- round(summary(lm(T~G:U1:R,data=dat3.lUr))$r.squared,2)
 
 ##### Study 4 #####
 round(cor(dat4.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+CT4 <- round(cor(dat4.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
 tmp4 <- dat4.lUr[complete.cases(dat4.lUr),]
 factanal(tmp4[,c(3,4,6)],1)
 tmp4$efaT <- factanal(tmp4[,c(3,4,6)],1,scores="regression")$scores
-as.numeric(round(cor(tmp4$efaT,tmp4$T),2)^2)
+EFA4 <- round(as.numeric(round(cor(tmp4$efaT,tmp4$T),2)^2),2)
 fit <- cfa(LVmodel2,data=dat4.lUr,auto.fix.first=T)
 summary(fit, fit.measures=TRUE)
 parameterEstimates(fit)
@@ -1249,13 +1261,15 @@ standardizedSolution(fit)
 fitMeasures(fit)
 S4 <- ETM.Fcn(dat4.lUr,"S4outT.pdf") ## report this one
 summary(lm(T~G*U1*R,data=dat4.lUr))
+ETI4 <- round(summary(lm(T~G:U1:R,data=dat4.lUr))$r.squared,2)
 
 ############# Study 5 ----------
 round(cor(dat5.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
+CT5 <- round(cor(dat5.lUr[,c(3:7,9)],use="pairwise.complete.obs"),2)
 tmp5 <- dat5.lUr[complete.cases(dat5.lUr),]
 factanal(tmp5[,c(3,4,6)],1)
 tmp5$efaT <- factanal(tmp5[,c(3,4,6)],1,scores="regression")$scores
-as.numeric(round(cor(tmp5$efaT,tmp5$T),2)^2)
+EFA5 <- round(as.numeric(round(cor(tmp5$efaT,tmp5$T),2)^2),2)
 LVmodel2 <- '
 F =~ G + U1 + R
 T ~ F
@@ -1266,7 +1280,19 @@ parameterEstimates(fit)
 standardizedSolution(fit)
 fitMeasures(fit)
 S5T <- ETM.Fcn(dat5.lUr,"S5outT.pdf") ## report this one
+summary(lm(T~G*U1*R,data=dat5.lUr))
+ETI5 <- round(summary(lm(T~G:U1:R,data=dat5.lUr))$r.squared,2)
 
+### create tables for the paper
+Tab1 <- as.data.frame(matrix(rep(NA,5*8),8,5))
+names(Tab1) <- paste("Study ",1:5,sep="")
+row.names(Tab1) <- c("rGU","rGR","rUR","rGT","rUT","rRT","r2-EFA","r2-ETI")
+Tab1[,1] <- c(CT1[2,1],CT1[3,1],CT1[2,3],CT1[4,1],CT1[4,2],CT1[4,3],EFA1,ETI1)
+Tab1[,2] <- c(CT2[2,1],CT2[3,1],CT2[2,3],CT2[4,1],CT2[4,2],CT2[4,3],EFA2,ETI2)
+Tab1[,3] <- c(CT3[2,1],CT3[4,1],CT3[2,4],CT3[5,1],CT3[5,2],CT3[5,4],EFA3,ETI3)
+Tab1[,4] <- c(CT4[2,1],CT4[4,1],CT4[2,4],CT4[5,1],CT4[5,2],CT4[5,4],EFA4,ETI4)
+Tab1[,5] <- c(CT5[2,1],CT5[4,1],CT5[2,4],CT5[5,1],CT5[5,2],CT5[5,4],EFA5,ETI5)
+Tab1
 
 
 library(lavaan)
