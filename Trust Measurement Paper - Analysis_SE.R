@@ -46,7 +46,7 @@ TrustDataFcn <- function(file=NULL,cut.time=10,source=NULL){
                 c("Q215","Q216","Q217","Q221","Q222","Q99","Q100"))
   out <- data.frame(id=NA,scen=NA,G=NA,U1=NA,U2=NA,R=NA,T=NA,B=NA,U3=NA)
   for(i in 1:8){
-    tmp <- data.frame(id=dat$ID,scen=i,dat[,Tvars[[i]]])
+    tmp <- data.frame(id=dat$ID,scen=i,dat[,Tvars[[i]]])]
     names(tmp) <- c("id","scen","G","U1","U2","R","T","B","U3")
     out <- rbind(out,tmp)
   }

@@ -111,3 +111,43 @@ ggplot(Rdat.w,aes(x=scen,y=Value,col=Measure))+geom_smooth()
 
 ggplot(Rdat.w,aes(x=Value,y))
 
+##### Look at the response tendencies by subject and vignette
+
+Rdat$Sid <- Rdat$study*1000 + Rdat$id
+summary(Rdat$Sid)
+
+lmerICCest <- function(x,facet=NULL){
+  tmp <- as.data.frame(VarCorr(x))[,c("grp","vcov")]
+  out <- round(tmp$vcov[!is.na(match(tmp$grp,facet))]/sum(tmp$vcov),2)
+  return(out)
+}
+
+library(lme4)
+l.G <- lmer(G~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.U1 <- lmer(U1~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.U2 <- lmer(U2~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.R <- lmer(R~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.T <- lmer(T~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.B <- lmer(B~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+l.U3 <- lmer(U3~1+(1|Sid)+(1|scen)+(1|source)+(1|study),data=Rdat)
+
+ICCoutput <- data.frame(Outcome=NA,Subject=NA,Vignette=NA,DataSource=NA,Study=NA)
+### Create dataframe of the results from the ICC estimates above
+ICCoutput <- rbind(ICCoutput,c("Goal Importance",lmerICCest(l.G,"Sid"),lmerICCest(l.G,"scen"),lmerICCest(l.G,"source"),lmerICCest(l.G,"study")))
+ICCoutput <- rbind(ICCoutput,c("Initial Uncertainty",lmerICCest(l.U1,"Sid"),lmerICCest(l.U1,"scen"),lmerICCest(l.U1,"source"),lmerICCest(l.U1,"study")))
+ICCoutput <- rbind(ICCoutput,c("Uncertainty about Agent",lmerICCest(l.U2,"Sid"),lmerICCest(l.U2,"scen"),lmerICCest(l.U2,"source"),lmerICCest(l.U2,"study")))
+ICCoutput <- rbind(ICCoutput,c("Reliance",lmerICCest(l.R,"Sid"),lmerICCest(l.R,"scen"),lmerICCest(l.R,"source"),lmerICCest(l.R,"study")))
+ICCoutput <- rbind(ICCoutput,c("SR Trust",lmerICCest(l.T,"Sid"),lmerICCest(l.T,"scen"),lmerICCest(l.T,"source"),lmerICCest(l.T,"study")))
+ICCoutput <- rbind(ICCoutput,c("Behavioral Intent",lmerICCest(l.B,"Sid"),lmerICCest(l.B,"scen"),lmerICCest(l.B,"source"),lmerICCest(l.B,"study")))
+ICCoutput <- rbind(ICCoutput,c("Post Decision Uncertainty",lmerICCest(l.U3,"Sid"),lmerICCest(l.U3,"scen"),lmerICCest(l.U3,"source"),lmerICCest(l.U3,"study")))
+
+ICCoutput <- ICCoutput[-1,]
+ICCoutput
+
+### these results indicate that subjects don't really contribute much compared to the vignettes
+### The VIGNETTES are doing what we want them to do - create variance in the different aspects of trust
+
+### what happens if we test a full model with all our trust bits as predictors:
+
+lm.full <- lm(T~G*U1*U2*R*U3,data=Rdat)
+summary(lm.full)

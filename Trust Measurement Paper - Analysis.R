@@ -481,6 +481,8 @@ tot := c1 + c2 + (a1*b + a2*b)
 fit3 <- sem(MedModel,data=dat5.l,se="bootstrap")
 summary(fit3)
 
+## Need to draw this model out to make sure we are testing the correct model
+
 ####################### MISC ######################################
 
 ### Study 1
@@ -1356,3 +1358,107 @@ outTMP2
 
 ggplot(outTMP2,aes(x=r,fill=rel)) + geom_density(alpha=.3)
 
+
+## we need to figure out how to label the scenarios
+tmpT <- ATD.U
+tmpT$HighT <- 0
+tmpT$HighT[tmpT$scen == 1] <- 1
+aggregate(tmpT$T,list(tmpT$study,tmpT$HighT),mean,rm.na=T)
+aggregate(tmpT[,c(3,4,6)],list(tmpT$study,tmpT$scen),mean,rm.na=T)
+tmpT$GUR <- tmpT$G*tmpT$U1*tmpT$R
+aggregate(tmpT$GUR,list(tmpT$study,tmpT$scen),mean,rm.na=T)
+## looks like scenario 5 is our HHH
+tmpT$HighT <- 0
+tmpT$HighT[tmpT$scen == 5] <- 1
+aggregate(tmpT$T,list(tmpT$study,tmpT$HighT),mean,rm.na=T)
+aggregate(tmpT[,c(3,4,6,7)],list(tmpT$study,tmpT$HighT),mean,rm.na=T)
+
+str(tmpT)
+
+
+############# NEW MODELING IDEAS 2/4/19 ##################
+
+### Behavior models for trust - reconceptualizing our trust model as a
+### mechanistic model for ensuring that trust is relevant to understanding the
+### relationship between self-reported trust and the behavioral intent often
+### elicited from participants as the sole measure of trust.
+
+#### What happens when we model SR trust as the sole predictor of behavioral intent?
+
+only1to8scen <- ATD.U[ATD.U$scen < 9,]
+
+modB0 <- glm(B~T,data=only1to8scen,family=binomial(link=logit))
+summary(modB0)
+exp(coef(modB0))
+
+ggplot(only1to8scen,aes(x=T,y=B)) + geom_smooth()
+ggplot(only1to8scen,aes(x=G*U1*R,y=B)) + geom_smooth()
+ggplot(only1to8scen,aes(x=G*U1*R,y=T)) + geom_smooth()
+
+modB1 <- glm(B~G:U1:R,data=only1to8scen, family=binomial(link=logit))
+summary(modB1)
+exp(coef(modB1))
+
+## get quasi R^2 for each model
+## LR0 model
+mean(only1to8scen$B) ## observed mean B
+var(only1to8scen$B) ## observed variance of B
+var(predict(modB0,only1to8scen,"response")) ## expected var of B
+var(predict(modB0,only1to8scen,"response"))/var(only1to8scen)
+
+## LR1 model
+var(predict(modB1,only1to8scen,"response")) ## expected var of B
+var(predict(modB1,only1to8scen,"response"))/var(ATD.U[ATD.U$scen < 9,8])
+
+str(summary(modB0))
+anova(modB0,modB1)
+
+modT0 <- lm(T~G*U1*R,data=ATD.U[ATD.U$scen < 9,])
+summary(modT0)
+
+
+## probability of T should be 1/8th - only one of the vignettes met our HHH
+
+GbyScen <- aggregate(Rdat.G$G,by=list(Rdat.G$scen),mean)
+names(GbyScen) <- c("scen","G")
+RbyScen <- aggregate(Rdat.R$R,by=list(Rdat.R$scen),mean)
+names(RbyScen) <- c("scen","R")
+U1byScen <- aggregate(Rdat.U1$U1,by=list(Rdat.U1$scen),mean)
+names(U1byScen) <- c("scen","U1")
+TbyScen <- aggregate(Rdat.T$T,by=list(Rdat.T$scen),mean)
+names(TbyScen) <- c("scen","T")
+BbyScen <- aggregate(Rdat.B$B,by=list(Rdat.B$scen),mean)
+names(BbyScen) <- c("scen","B")
+
+ScenObsGRU1 <- cbind(GbyScen,RbyScen[,-1],U1byScen[,-1],TbyScen[,-1],BbyScen[,-1])
+names(ScenObsGRU1) <- c("scen","G","R","U1","T","B")
+str(ScenObsGRU1)  
+ScenObsGRU1
+
+
+### Some random thoughts on the analytic plan ----
+
+### imagine a person who truly trusts an agent.  Their uncertainty ought to drop
+### with respect to the outcome provided they engage the agent who appears
+### reliable in their ability to deliver the desired outcome.
+
+## How does U change by person and by vignette?
+
+str(ATD.U)
+ATD.Ulong <- reshape(ATD.U,varying=c("U1","U2","U3"),v.names="Unc",timevar="time",times=c(1,2,3),new.row.names = 1:(5853*3),direction="long")
+str(ATD.Ulong)
+
+library(lme4)
+lmeUl <- lmer(Unc~time*G*R*B*T+(1|scen),data=ATD.Ulong)
+summary(lmeUl)
+
+
+#### another idea
+
+### Trust ought to lead to behavioral engagement iff U1, R, and G are both high.
+### Let's figure out this via a simple analysis:
+
+glm.B <- glm(B~T*(G:U1:R), data=ATD.U, family=binomial)
+summary(glm.B)
+
+## viola!  that is what we needed to find.
