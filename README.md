@@ -12,20 +12,15 @@ https://docs.google.com/spreadsheets/d/1QtbYTIjyJSNe9m34xZEcg4rPm255Cbxbw-YZqK2w
 
 ## Study 3 (has 4 files)
 
-### Flyers (N=7)
-https://docs.google.com/spreadsheets/d/1Qf8QHOWWMbFY_lS4iQZO5QCJ2ew0jakw7u8M1IPEauc/edit?usp=sharing
+Flyers (N=7): https://docs.google.com/spreadsheets/d/1Qf8QHOWWMbFY_lS4iQZO5QCJ2ew0jakw7u8M1IPEauc/edit?usp=sharing
 
-### mTurk (N=56)
-https://docs.google.com/spreadsheets/d/1ef0zgPkVPid4lfsS16J_iklwY0YU9sNNTA-FeYpXaUQ/edit?usp=share_link
+mTurk (N=56): https://docs.google.com/spreadsheets/d/1ef0zgPkVPid4lfsS16J_iklwY0YU9sNNTA-FeYpXaUQ/edit?usp=share_link
 
-### Reddit (N=57)
-https://docs.google.com/spreadsheets/d/1e09hRiY-ZH_Gtzuz9mAU2ljRxLduXfZGC_i0GGxG7RY/edit?usp=share_link
+Reddit (N=57): https://docs.google.com/spreadsheets/d/1e09hRiY-ZH_Gtzuz9mAU2ljRxLduXfZGC_i0GGxG7RY/edit?usp=share_link
 
-### SONA (N=104)
-https://docs.google.com/spreadsheets/d/1JhDjE4tNbyak0cWyjRXlbJvlwlNL3mKp0usHbt_xMoQ/edit?usp=share_link
+SONA (N=104): https://docs.google.com/spreadsheets/d/1JhDjE4tNbyak0cWyjRXlbJvlwlNL3mKp0usHbt_xMoQ/edit?usp=share_link
 
-## Study 4 (N=176)
-https://docs.google.com/spreadsheets/d/175rYv736TPzqErZ1CRkNHyjksPyNwn_cn241gHN2vGE/edit?usp=share_link
+Study 4 (N=176): https://docs.google.com/spreadsheets/d/175rYv736TPzqErZ1CRkNHyjksPyNwn_cn241gHN2vGE/edit?usp=share_link
 
 ## Study 5 (4 Files)
 
